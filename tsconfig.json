@@ -28,7 +28,7 @@
     /* Path Aliases */
     "baseUrl": "./",
     "paths": {
-      "@style/*": ["src/style/*"],
+      "@style/*": ["style/*"],
       "@layouts/*": ["src/layouts/*"],
       "@containers/*": ["src/containers/*"],
       "@config/*": ["src/config/*"],
@@ -38,8 +38,9 @@
       "@context/*": ["src/context/*"],
       "@queries/*": ["src/queries/*"],
       "@store/*": ["src/store/*"],
-      "@mutations/*": ["src/mutations/*"]
+      "@mutations/*": ["src/mutations/*"],
+      "@services/*": ["src/services/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "style"]
 }

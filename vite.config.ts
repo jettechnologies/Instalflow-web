@@ -15,7 +15,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@style": path.resolve(__dirname, "./src/style"),
+      "@style": path.resolve(__dirname, "./style"),
       "@layouts": path.resolve(__dirname, "./src/layouts"),
       "@containers": path.resolve(__dirname, "./src/containers"),
       "@config": path.resolve(__dirname, "./src/config"),
@@ -26,6 +26,7 @@ export default defineConfig({
       "@queries": path.resolve(__dirname, "./src/queries"),
       "@store": path.resolve(__dirname, "./src/store"),
       "@mutations": path.resolve(__dirname, "./src/mutations"),
+      "@services": path.resolve(__dirname, "./src/services"),
     },
   },
 });

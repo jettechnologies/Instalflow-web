@@ -116,7 +116,7 @@ export const InputField = ({
         textTransform={labelTextTransform || "lowercase"}
         lineHeight="20px"
         fontWeight="400"
-        color={labelColor || "#211E1D"}>
+        color={labelColor || "var(--brand-primary)"}>
         {label}{" "}
         {labelInfo && (
           <Text as="span" color="var(--deep-blood)" display="inline">
@@ -246,7 +246,7 @@ export const TextAreaField = ({
           fontSize="16px"
           lineHeight="22px"
           fontWeight="400"
-          color={labelColor || ""}>
+          color={labelColor || "var(--brand-primary)"}>
           {label}
         </FormLabel>
 
@@ -296,7 +296,7 @@ export const SwitchField = ({
   label,
   labelSize,
   labelWeight,
-  labelColor = "#211E1D",
+  labelColor = "var(--brand-primary)",
   labelPosition = "left",
   isRequired = false,
   onChange,
@@ -374,7 +374,7 @@ type SelectProps = FormControlProps & {
 export const ChakraSelectField: React.FC<SelectProps> = ({
   name,
   label,
-  labelColor = "#211E1D",
+  labelColor = "var(--brand-primary)",
   options,
   isRequired = false,
   ...props

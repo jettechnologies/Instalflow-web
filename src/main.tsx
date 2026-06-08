@@ -1,38 +1,46 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-// import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import "../style/globals.scss";
 import { routeTree } from "./routeTree.gen";
-import { ToastProvider } from "./context";
-// import theme from "@config/theme";
+import { ToastProvider, AuthProvider, useAuth } from "./context";
+import TanstackQueryProvider from "./providers/tanstack-provider";
+import { useState } from "react";
+import type { QueryClient } from "@tanstack/react-query";
 
-// Set up a Router instance
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",
+  context: {
+    auth: undefined,
+    queryClient: undefined!,
+  },
 });
 
-// Register things for typesafety
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
 
-// const theme = extendTheme({
-//   colors: {
-//     primary: {
-//       100: "#a5c339",
-//     },
-//   },
-// });
+function InnerApp({ queryClient }: { queryClient: QueryClient }) {
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ auth, queryClient }} />;
+}
 
 function App() {
+  const [queryClient, setQueryClient] = useState<QueryClient | undefined>(
+    undefined
+  );
+
   return (
     <ChakraProvider resetCSS>
       <ToastProvider>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <TanstackQueryProvider onClientReady={setQueryClient}>
+            {queryClient && <InnerApp queryClient={queryClient} />}
+          </TanstackQueryProvider>
+        </AuthProvider>
       </ToastProvider>
     </ChakraProvider>
   );

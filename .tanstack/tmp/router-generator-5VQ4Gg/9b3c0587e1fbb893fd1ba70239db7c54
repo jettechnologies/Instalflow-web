@@ -12,14 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authCompanyOnboardingRouteImport } from './routes/(auth)/company-onboarding'
-import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
-import { Route as AuthenticatedDashboardMarketerMarketerRouteImport } from './routes/_authenticated/dashboard/_marketer/marketer'
-import { Route as AuthenticatedDashboardCustomerCustomerRouteImport } from './routes/_authenticated/dashboard/_customer/customer'
-import { Route as AuthenticatedDashboardCompanyCompanyRouteImport } from './routes/_authenticated/dashboard/_company/company'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -34,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const authResetPasswordRoute = authResetPasswordRouteImport.update({
   id: '/(auth)/reset-password',
@@ -55,30 +57,6 @@ const authCompanyOnboardingRoute = authCompanyOnboardingRouteImport.update({
   path: '/company-onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardIndexRoute =
-  AuthenticatedDashboardIndexRouteImport.update({
-    id: '/dashboard/',
-    path: '/dashboard/',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedDashboardMarketerMarketerRoute =
-  AuthenticatedDashboardMarketerMarketerRouteImport.update({
-    id: '/dashboard/_marketer/marketer',
-    path: '/dashboard/marketer',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedDashboardCustomerCustomerRoute =
-  AuthenticatedDashboardCustomerCustomerRouteImport.update({
-    id: '/dashboard/_customer/customer',
-    path: '/dashboard/customer',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedDashboardCompanyCompanyRoute =
-  AuthenticatedDashboardCompanyCompanyRouteImport.update({
-    id: '/dashboard/_company/company',
-    path: '/dashboard/company',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,10 +65,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
-  '/dashboard': typeof AuthenticatedDashboardIndexRoute
-  '/dashboard/company': typeof AuthenticatedDashboardCompanyCompanyRoute
-  '/dashboard/customer': typeof AuthenticatedDashboardCustomerCustomerRoute
-  '/dashboard/marketer': typeof AuthenticatedDashboardMarketerMarketerRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,10 +74,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof authForgotPasswordRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
-  '/dashboard': typeof AuthenticatedDashboardIndexRoute
-  '/dashboard/company': typeof AuthenticatedDashboardCompanyCompanyRoute
-  '/dashboard/customer': typeof AuthenticatedDashboardCustomerCustomerRoute
-  '/dashboard/marketer': typeof AuthenticatedDashboardMarketerMarketerRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,10 +85,7 @@ export interface FileRoutesById {
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
-  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
-  '/_authenticated/dashboard/_company/company': typeof AuthenticatedDashboardCompanyCompanyRoute
-  '/_authenticated/dashboard/_customer/customer': typeof AuthenticatedDashboardCustomerCustomerRoute
-  '/_authenticated/dashboard/_marketer/marketer': typeof AuthenticatedDashboardMarketerMarketerRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,9 +97,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/dashboard'
-    | '/dashboard/company'
-    | '/dashboard/customer'
-    | '/dashboard/marketer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,9 +106,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/dashboard'
-    | '/dashboard/company'
-    | '/dashboard/customer'
-    | '/dashboard/marketer'
   id:
     | '__root__'
     | '/'
@@ -152,10 +115,7 @@ export interface FileRouteTypes {
     | '/(auth)/forgot-password'
     | '/(auth)/login'
     | '/(auth)/reset-password'
-    | '/_authenticated/dashboard/'
-    | '/_authenticated/dashboard/_company/company'
-    | '/_authenticated/dashboard/_customer/customer'
-    | '/_authenticated/dashboard/_marketer/marketer'
+    | '/_authenticated/dashboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/(auth)/reset-password': {
       id: '/(auth)/reset-password'
       path: '/reset-password'
@@ -219,52 +186,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authCompanyOnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard/': {
-      id: '/_authenticated/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard/_marketer/marketer': {
-      id: '/_authenticated/dashboard/_marketer/marketer'
-      path: '/dashboard/marketer'
-      fullPath: '/dashboard/marketer'
-      preLoaderRoute: typeof AuthenticatedDashboardMarketerMarketerRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard/_customer/customer': {
-      id: '/_authenticated/dashboard/_customer/customer'
-      path: '/dashboard/customer'
-      fullPath: '/dashboard/customer'
-      preLoaderRoute: typeof AuthenticatedDashboardCustomerCustomerRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard/_company/company': {
-      id: '/_authenticated/dashboard/_company/company'
-      path: '/dashboard/company'
-      fullPath: '/dashboard/company'
-      preLoaderRoute: typeof AuthenticatedDashboardCompanyCompanyRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
   }
 }
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
-  AuthenticatedDashboardCompanyCompanyRoute: typeof AuthenticatedDashboardCompanyCompanyRoute
-  AuthenticatedDashboardCustomerCustomerRoute: typeof AuthenticatedDashboardCustomerCustomerRoute
-  AuthenticatedDashboardMarketerMarketerRoute: typeof AuthenticatedDashboardMarketerMarketerRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
-  AuthenticatedDashboardCompanyCompanyRoute:
-    AuthenticatedDashboardCompanyCompanyRoute,
-  AuthenticatedDashboardCustomerCustomerRoute:
-    AuthenticatedDashboardCustomerCustomerRoute,
-  AuthenticatedDashboardMarketerMarketerRoute:
-    AuthenticatedDashboardMarketerMarketerRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
