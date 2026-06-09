@@ -6,14 +6,7 @@ import {
   TOKEN_COOKIE_KEY,
   USER_COOKIE_KEY,
 } from "@utils/misc";
-
-export interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  role: "COMPANY" | "ADMIN" | "MARKETER" | "CUSTOMER";
-  forcePasswordChange?: boolean;
-}
+import type { UserProfile } from "@utils/types";
 
 interface RefreshToken {
   accessToken: string;

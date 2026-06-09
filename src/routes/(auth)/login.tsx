@@ -34,7 +34,6 @@ function RouteComponent() {
                 search: { view: "onboarding-step1" },
               })
             }
-            onLoginSuccess={() => navigate({ to: "/dashboard" })}
           />
         </LeftPanel>
       </Box>

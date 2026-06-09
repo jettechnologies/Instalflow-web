@@ -3,7 +3,7 @@ import { useAuth } from "@context/auth-provider";
 import { useToastContext } from "@hooks/context";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/dashboard/company/")({
+export const Route = createFileRoute("/_authenticated/company/")({
   component: RouteComponent,
 });
 

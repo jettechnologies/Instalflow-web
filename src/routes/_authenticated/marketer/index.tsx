@@ -3,7 +3,7 @@ import { useAuth } from "@context/auth-provider";
 import { useToastContext } from "@hooks/context";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/dashboard/marketer/")({
+export const Route = createFileRoute("/_authenticated/marketer/")({
   component: RouteComponent,
 });
 
@@ -11,8 +11,6 @@ function RouteComponent() {
   const { logout } = useAuth();
 
   const { openToast } = useToastContext();
-
-  console.log("Company route mounted");
 
   return (
     <Center

@@ -2,7 +2,6 @@ import type { OnboardingView } from "@utils/types";
 import { readSession } from "@store/session-store/onboarding-session";
 import { useUpdateSearchParam } from "@hooks/context/useSearchParams";
 import { useCallback, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { Box, Link, Text } from "@chakra-ui/react";
 import { LeftPanel } from "@components/shared/left-panel";
 import {
@@ -39,8 +38,6 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
   );
 
   const session = readSession();
-
-  const navigate = useNavigate();
 
   const setUserDataSession = (data: UserData) =>
     SessionStorageHelper.set<UserData>("IFL_USER_DATA", data);
@@ -121,12 +118,7 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
           )}
 
           {view === "login" && (
-            <LoginForm
-              onRegisterClick={() => setView("onboarding-step1")}
-              onLoginSuccess={() => {
-                navigate({ to: "/dashboard" });
-              }}
-            />
+            <LoginForm onRegisterClick={() => setView("onboarding-step1")} />
           )}
         </LeftPanel>
       </Box>

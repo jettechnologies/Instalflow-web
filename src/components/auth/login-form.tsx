@@ -10,20 +10,48 @@ import {
 import { useAuth } from "@context/auth-provider";
 import { useNavigate } from "@tanstack/react-router";
 import { useToastContext } from "@hooks/context";
+import type { UserRole } from "@utils/types";
 
 interface LoginFormProps {
   onRegisterClick: () => void;
-  onLoginSuccess?: () => void;
 }
 
-export const LoginForm = ({
-  onRegisterClick,
-  onLoginSuccess,
-}: LoginFormProps) => {
+export const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
   const { login } = useAuth();
 
   const { openToast } = useToastContext();
   const navigate = useNavigate();
+
+  const handleRoleBasedRedirect = (userRoles: UserRole) => {
+    switch (userRoles) {
+      case "COMPANY":
+        navigate({
+          to: "/company",
+        });
+        return;
+      case "ADMIN":
+        navigate({
+          to: "/company",
+        });
+        return;
+      case "MARKETER":
+        navigate({
+          to: "/marketer",
+        });
+        return;
+      case "CUSTOMER":
+        navigate({
+          to: "/customer",
+        });
+
+        return;
+
+      default:
+        navigate({
+          to: "/login",
+        });
+    }
+  };
 
   return (
     <Formik
@@ -31,8 +59,8 @@ export const LoginForm = ({
       validationSchema={LoginSchema}
       onSubmit={async (values, { setSubmitting }) => {
         try {
-          await login(values.email, values.password);
-          onLoginSuccess?.();
+          const { profile } = await login(values.email, values.password);
+          handleRoleBasedRedirect(profile.role);
         } catch (error) {
           const errorMessage =
             error instanceof Error

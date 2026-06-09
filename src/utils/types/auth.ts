@@ -8,6 +8,15 @@ export const RESET_PASSWORD_VIEWS = ["view_otp", "reset_password"] as const;
 
 export type OnboardingView = (typeof ONBOARDING_VIEWS)[number];
 
+export type UserRole = "COMPANY" | "ADMIN" | "MARKETER" | "CUSTOMER";
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  forcePasswordChange?: boolean;
+}
+
 export interface OnboardingIntentData {
   intentId: string;
   email: string;
