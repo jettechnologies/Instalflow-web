@@ -9,15 +9,17 @@ import {
   LockIcon,
 } from "@phosphor-icons/react";
 import { InputField } from "@components/forms/input-field";
-import { useStartOnboarding } from "@services/tanstack-mutations/onboarding";
 
 interface Step1Props {
-  onSuccess: () => void;
+  onSuccess: (data: {
+    companyName: string;
+    adminName: string;
+    email: string;
+    password: string;
+  }) => void;
 }
 
 export const Step1Identity = ({ onSuccess }: Step1Props) => {
-  const { mutateAsync: startOnboarding, isPending } = useStartOnboarding();
-
   return (
     <Formik
       initialValues={{
@@ -27,8 +29,8 @@ export const Step1Identity = ({ onSuccess }: Step1Props) => {
         password: "",
       }}
       validationSchema={Step1Schema}
-      onSubmit={async (vals) => await startOnboarding(vals).then(onSuccess)}>
-      {({ isSubmitting }) => (
+      onSubmit={(vals) => onSuccess(vals)}>
+      {() => (
         <Form style={{ width: "100%" }}>
           <VStack spacing={5} align="stretch">
             <InputField
@@ -61,7 +63,6 @@ export const Step1Identity = ({ onSuccess }: Step1Props) => {
 
             <Button
               type="submit"
-              isLoading={isSubmitting || isPending}
               h="52px"
               borderRadius="12px"
               background="var(--brand-gradient)"

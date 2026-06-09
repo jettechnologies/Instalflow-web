@@ -15,8 +15,15 @@ import {
 } from "@chakra-ui/react";
 import { getSubscriptionPlansOptions } from "@services/tanstack-queries";
 import { PlanCard } from "./plan-card";
-import { useInitializeSubscriptionOnboarding } from "@services/tanstack-mutations";
+import {
+  useInitializeSubscriptionOnboarding,
+  useStartOnboarding,
+} from "@services/tanstack-mutations";
 import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import type { UserData } from "@containers/onboarding-flow";
+import { useToastContext } from "@hooks/context";
+import { useNavigate } from "@tanstack/react-router";
+import { SessionStorageHelper } from "@utils/helpers";
 
 const CYCLE_TABS: { label: string; value: BillingCycle }[] = [
   { label: "Weekly", value: "WEEKLY" },
@@ -25,31 +32,91 @@ const CYCLE_TABS: { label: string; value: BillingCycle }[] = [
 ];
 
 interface Step2Props {
-  intentId: string;
+  userData: UserData | null;
+  onSuccess?: () => void;
   onBack: () => void;
 }
 
-export const Step2Plans = ({ intentId, onBack }: Step2Props) => {
+export const Step2Plans = ({ userData, onSuccess, onBack }: Step2Props) => {
   const [cycle, setCycle] = useState<BillingCycle>("MONTHLY");
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+
+  const { openToast } = useToastContext();
+  const navigate = useNavigate();
 
   const { data: allPlans, isLoading } = useQuery({
     ...getSubscriptionPlansOptions(),
     select: (data) => data,
   });
 
-  const visiblePlans = allPlans?.filter((p) => p.billingCycle === cycle) || [];
+  const visiblePlans = allPlans?.filter((p) => p.interval === cycle) || [];
 
   useEffect(() => {
-    setSelectedPlanId(visiblePlans?.[0]?.id ?? null);
+    setSelectedPlanId(visiblePlans?.[0]?.planId ?? null);
   }, [cycle, allPlans]);
 
   const { mutateAsync: checkoutMutation, isPending: checkoutLoading } =
     useInitializeSubscriptionOnboarding();
 
+  const { mutateAsync: startOnboarding, isPending: startOnboardingPending } =
+    useStartOnboarding();
+
+  const handleCheckout = async () => {
+    if (!userData && userData === null) {
+      openToast(
+        "Would be redirected to the Identity form, Please fill correctly",
+        "warning"
+      );
+      setTimeout(
+        () =>
+          navigate({
+            to: ".",
+            search: (prev) => ({
+              ...prev,
+              view: "onboarding-step1",
+            }),
+          }),
+        1000
+      );
+
+      return;
+    }
+    try {
+      const onboarding = await startOnboarding({
+        ...userData,
+        planId: selectedPlanId!,
+      });
+      const intentId = onboarding.data.onboardingIntent.intentId;
+
+      if (!intentId) {
+        throw new Error("Onboarding Not successfully");
+      }
+
+      const {
+        data: { authorization_url },
+      } = await checkoutMutation({ intentId });
+
+      if (!authorization_url) {
+        throw new Error("Missing Paystack authorization URL");
+      }
+
+      SessionStorageHelper.remove("IFL_USER_DATA");
+      onSuccess?.();
+
+      // window.location.href = authorization_url;
+      window.open(authorization_url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.";
+
+      openToast(errorMessage, "error");
+    }
+  };
+
   return (
     <VStack spacing={6} align="stretch" w="full">
-      {/* Billing cycle toggle */}
       <Box
         bg="var(--bg-layer-2)"
         borderRadius="12px"
@@ -94,7 +161,6 @@ export const Step2Plans = ({ intentId, onBack }: Step2Props) => {
         </HStack>
       </Box>
 
-      {/* Plan grid */}
       {isLoading ? (
         <Flex justify="center" py={10}>
           <Spinner color="var(--brand-primary)" />
@@ -111,10 +177,10 @@ export const Step2Plans = ({ intentId, onBack }: Step2Props) => {
           }}
           gap={4}>
           {visiblePlans.map((plan) => (
-            <GridItem key={plan.id}>
+            <GridItem key={plan.planId}>
               <PlanCard
                 plan={plan}
-                selected={selectedPlanId === plan.id}
+                selected={selectedPlanId === plan.planId}
                 onSelect={setSelectedPlanId}
               />
             </GridItem>
@@ -122,7 +188,6 @@ export const Step2Plans = ({ intentId, onBack }: Step2Props) => {
         </Grid>
       )}
 
-      {/* Actions */}
       <HStack spacing={3} mt={2}>
         <Button
           variant="ghost"
@@ -145,10 +210,8 @@ export const Step2Plans = ({ intentId, onBack }: Step2Props) => {
           fontWeight="700"
           _hover={{ opacity: 0.9 }}
           _active={{ opacity: 0.85 }}
-          onClick={() =>
-            checkoutMutation({ intentId, planId: selectedPlanId! })
-          }
-          isLoading={checkoutLoading}
+          onClick={async () => await handleCheckout()}
+          isLoading={checkoutLoading || startOnboardingPending}
           isDisabled={!selectedPlanId}
           rightIcon={<ArrowRightIcon size={18} />}
           flex={3}>

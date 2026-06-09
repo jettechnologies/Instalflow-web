@@ -1,4 +1,5 @@
 import { apiService, type StandardResponse } from "@services/api-service";
+import type { OnboardingIntentData } from "@utils/types";
 
 export interface CompanyOnboardingParams {
   companyName: string;
@@ -10,18 +11,21 @@ export interface CompanyOnboardingParams {
 
 export interface SubscriptionInitPayload {
   intentId: string;
-  planId: string;
 }
 
 export interface PaystackGatewayResponse {
   authorization_url: string;
+  access_code: string;
   reference: string;
 }
 
 export const onboardCompany = async (
   data: CompanyOnboardingParams
-): Promise<StandardResponse<{ intentId: string }>> => {
-  return apiService.post<{ intentId: string }>("/auth/start-onboarding", data);
+): Promise<StandardResponse<{ onboardingIntent: OnboardingIntentData }>> => {
+  return apiService.post<{ onboardingIntent: OnboardingIntentData }>(
+    "/auth/start-onboarding",
+    data
+  );
 };
 
 export const initializeOnboardingSubscription = async (

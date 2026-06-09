@@ -1,19 +1,19 @@
 import type { BillingCycle, SubscriptionPlan } from "@utils/types";
+import { Badge, Box, Flex, HStack, Text, Divider } from "@chakra-ui/react";
 import {
-  Badge,
-  Box,
-  Flex,
-  HStack,
-  Text,
-  VStack,
-  Divider,
-} from "@chakra-ui/react";
-import { CheckCircle, Crown, Lightning, Rocket } from "@phosphor-icons/react";
+  CheckCircle,
+  CrownIcon,
+  LightningIcon,
+  RocketIcon,
+} from "@phosphor-icons/react";
+import { formatCurrency } from "@utils/misc";
 
 const CYCLE_ICONS: Record<BillingCycle, React.ReactNode> = {
-  WEEKLY: <Lightning size={14} weight="fill" color="var(--status-warning)" />,
-  MONTHLY: <Rocket size={14} weight="fill" color="var(--brand-primary)" />,
-  YEARLY: <Crown size={14} weight="fill" color="var(--status-success)" />,
+  WEEKLY: (
+    <LightningIcon size={14} weight="fill" color="var(--status-warning)" />
+  ),
+  MONTHLY: <RocketIcon size={14} weight="fill" color="var(--brand-primary)" />,
+  YEARLY: <CrownIcon size={14} weight="fill" color="var(--status-success)" />,
 };
 
 export const PlanCard = ({
@@ -25,15 +25,18 @@ export const PlanCard = ({
   selected: boolean;
   onSelect: (id: string) => void;
 }) => {
-  const savings = plan.discountPrice
-    ? Math.round(((plan.basePrice - plan.discountPrice) / plan.basePrice) * 100)
-    : 0;
+  const savings = parseInt(plan.discountPercentage);
+
+  const currentPrice =
+    parseInt(plan.discountPrice) > 0
+      ? parseInt(plan.discountPrice)
+      : parseInt(plan.price);
 
   return (
     <Box
       as="button"
       type="button"
-      onClick={() => onSelect(plan.id)}
+      onClick={() => onSelect(plan.planId)}
       w="full"
       textAlign="left"
       p={5}
@@ -50,7 +53,7 @@ export const PlanCard = ({
         bg: "rgba(124, 58, 237, 0.05)",
       }}
       cursor="pointer">
-      {plan.isPopular && (
+      {/* {plan. && (
         <Badge
           position="absolute"
           top="-11px"
@@ -67,11 +70,11 @@ export const PlanCard = ({
           textTransform="uppercase">
           Most Popular
         </Badge>
-      )}
+      )} */}
 
       <HStack justify="space-between" mb={3}>
         <HStack spacing={2}>
-          {CYCLE_ICONS[plan.billingCycle]}
+          {CYCLE_ICONS[plan.interval]}
           <Text fontSize="sm" fontWeight="700" color="var(--text-primary)">
             {plan.name}
           </Text>
@@ -90,22 +93,22 @@ export const PlanCard = ({
       </HStack>
 
       <HStack align="baseline" spacing={1} mb={1}>
-        {plan.discountPrice && (
+        {parseInt(plan.discountPrice) > 0 && (
           <Text
             fontSize="xs"
             color="var(--text-muted)"
             textDecoration="line-through">
-            ₦{plan.basePrice.toLocaleString()}
+            {formatCurrency(parseInt(plan.price))}
           </Text>
         )}
         <Text
           fontSize="xl"
           fontWeight="800"
           color={selected ? "var(--brand-primary)" : "var(--text-primary)"}>
-          ₦{(plan.discountPrice ?? plan.basePrice).toLocaleString()}
+          {formatCurrency(currentPrice)}
         </Text>
         <Text fontSize="xs" color="var(--text-muted)">
-          /{plan.billingCycle.toLowerCase()}
+          /{plan.interval.toLowerCase()}
         </Text>
       </HStack>
 
@@ -115,7 +118,7 @@ export const PlanCard = ({
 
       <Divider borderColor="var(--border-structural)" mb={3} />
 
-      <VStack align="stretch" spacing={1}>
+      {/* <VStack align="stretch" spacing={1}>
         {plan.features.slice(0, 4).map((f) => (
           <HStack key={f} spacing={2}>
             <CheckCircle
@@ -133,7 +136,7 @@ export const PlanCard = ({
             +{plan.features.length - 4} more features
           </Text>
         )}
-      </VStack>
+      </VStack> */}
 
       {selected && (
         <Flex

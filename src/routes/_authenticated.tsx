@@ -12,9 +12,4 @@ export const Route = createFileRoute("/_authenticated")({
       });
     }
   },
-  component: RouteComponent,
 });
-
-function RouteComponent() {
-  return undefined;
-}

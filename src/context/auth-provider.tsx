@@ -81,9 +81,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const { accessToken: token, user: profile } = response.data;
 
-      console.log(profile, "profile");
-      console.log(response, "response");
-
       setAuthToken(token);
       setCookie(USER_COOKIE_KEY, JSON.stringify(profile), {
         ...COOKIE_OPTIONS,

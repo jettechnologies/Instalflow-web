@@ -18,14 +18,14 @@ function RouteComponent() {
         }>
         Onboarding
       </Button>
-      {/* <Button
+      <Button
         onClick={() =>
           navigate({
             to: "/login",
           })
         }>
         Login
-      </Button> */}
+      </Button>
     </div>
   );
 }

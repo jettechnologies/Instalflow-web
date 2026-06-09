@@ -14,20 +14,21 @@ export interface OnboardingIntentData {
   companyName: string;
   adminName: string;
   planId: string;
-  status: "PENDING" | "PAID" | "COMPLETED" | "FAILED";
+  status: "PENDING" | "PAYMENT_INITIALIZED" | "PAID" | "COMPLETED" | "FAILED";
   createdAt: string;
 }
 
 export type BillingCycle = "WEEKLY" | "MONTHLY" | "YEARLY";
 
 export interface SubscriptionPlan {
-  id: string;
+  planId: string;
   name: string;
   description: string;
-  basePrice: number;
-  discountPrice?: number;
-  currency: string;
-  billingCycle: BillingCycle;
-  features: string[];
-  isPopular?: boolean;
+  price: string;
+  discountPrice: string;
+  discountPercentage: string;
+  interval: "WEEKLY" | "MONTHLY" | "YEARLY";
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

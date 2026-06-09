@@ -1,7 +1,7 @@
 import type { OnboardingView } from "@utils/types";
 import { readSession } from "@store/session-store/onboarding-session";
 import { useUpdateSearchParam } from "@hooks/context/useSearchParams";
-import { useCallback, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Box, Link, Text } from "@chakra-ui/react";
 import { LeftPanel } from "@components/shared/left-panel";
@@ -12,13 +12,23 @@ import {
 } from "@components/auth/company-onboarding";
 import { LoginForm } from "@components/auth/login-form";
 import type { OnboardingSearchType } from "@utils/schema";
+import { SessionStorageHelper } from "@utils/helpers";
 
 interface OnboardingFlowProps {
   view: OnboardingView;
 }
 
+export interface UserData {
+  companyName: string;
+  adminName: string;
+  email: string;
+  password: string;
+}
+
 export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
   const updateSearchParam = useUpdateSearchParam<OnboardingSearchType>();
+
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   const view: OnboardingView =
     (rawView as OnboardingView) ?? "onboarding-step1";
@@ -32,14 +42,8 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (view === "onboarding-step2" && !session?.intentId) {
-      navigate({
-        to: ".",
-        search: (prev) => ({ ...prev, view: "onboarding-step1" }),
-      });
-    }
-  }, [view, session?.intentId, navigate]);
+  const setUserDataSession = (data: UserData) =>
+    SessionStorageHelper.set<UserData>("IFL_USER_DATA", data);
 
   const screenMeta: Record<
     OnboardingView,
@@ -64,6 +68,8 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
 
   const meta = screenMeta[view];
 
+  const sessionUserData = SessionStorageHelper.get<UserData>("IFL_USER_DATA");
+
   return (
     <Box
       minH="100vh"
@@ -82,7 +88,9 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
           {view === "onboarding-step1" && (
             <>
               <Step1Identity
-                onSuccess={() => {
+                onSuccess={(data) => {
+                  setUserData(data);
+                  setUserDataSession(data);
                   setView("onboarding-step2");
                 }}
               />
@@ -104,9 +112,10 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
             </>
           )}
 
-          {view === "onboarding-step2" && session?.intentId && (
+          {view === "onboarding-step2" && (
             <Step2Plans
-              intentId={session.intentId}
+              userData={sessionUserData ?? userData}
+              onSuccess={() => setView("login")}
               onBack={() => setView("onboarding-step1")}
             />
           )}

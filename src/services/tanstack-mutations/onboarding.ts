@@ -17,7 +17,7 @@ export const useStartOnboarding = () => {
       const message =
         data?.message || "Company workspace profile provisioned successfully";
 
-      const intentId = data?.data?.intentId;
+      const intentId = data?.data?.onboardingIntent.intentId;
 
       writeSession({ intentId, companyName, email });
       openToast(message, "success");
