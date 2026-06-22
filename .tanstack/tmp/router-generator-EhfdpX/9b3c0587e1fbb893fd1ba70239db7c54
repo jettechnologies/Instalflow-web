@@ -27,10 +27,9 @@ import { Route as AuthenticatedLayoutCompanyLayoutPayoutsRouteImport } from './r
 import { Route as AuthenticatedLayoutCompanyLayoutOverviewRouteImport } from './routes/_authenticated/_layout/company/_layout/overview'
 import { Route as AuthenticatedLayoutCompanyLayoutApplicationsRouteImport } from './routes/_authenticated/_layout/company/_layout/applications'
 import { Route as AuthenticatedLayoutCompanyLayoutAnalyticsRouteImport } from './routes/_authenticated/_layout/company/_layout/analytics'
+import { Route as AuthenticatedLayoutCompanyLayoutAdminRouteImport } from './routes/_authenticated/_layout/company/_layout/admin'
 import { Route as AuthenticatedLayoutCompanyLayoutMarketersIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/marketers/index'
-import { Route as AuthenticatedLayoutCompanyLayoutAdminsIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/admins/index'
 import { Route as AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRouteImport } from './routes/_authenticated/_layout/company/_layout/marketers/$marketerId'
-import { Route as AuthenticatedLayoutCompanyLayoutAdminsAdminIdRouteImport } from './routes/_authenticated/_layout/company/_layout/admins/$adminId'
 
 const AuthenticatedLayoutCompanyRouteImport = createFileRoute(
   '/_authenticated/_layout/company',
@@ -127,28 +126,22 @@ const AuthenticatedLayoutCompanyLayoutAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
   } as any)
+const AuthenticatedLayoutCompanyLayoutAdminRoute =
+  AuthenticatedLayoutCompanyLayoutAdminRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
+  } as any)
 const AuthenticatedLayoutCompanyLayoutMarketersIndexRoute =
   AuthenticatedLayoutCompanyLayoutMarketersIndexRouteImport.update({
     id: '/marketers/',
     path: '/marketers/',
     getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
   } as any)
-const AuthenticatedLayoutCompanyLayoutAdminsIndexRoute =
-  AuthenticatedLayoutCompanyLayoutAdminsIndexRouteImport.update({
-    id: '/admins/',
-    path: '/admins/',
-    getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
-  } as any)
 const AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute =
   AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRouteImport.update({
     id: '/marketers/$marketerId',
     path: '/marketers/$marketerId',
-    getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
-  } as any)
-const AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute =
-  AuthenticatedLayoutCompanyLayoutAdminsAdminIdRouteImport.update({
-    id: '/admins/$adminId',
-    path: '/admins/$adminId',
     getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
   } as any)
 
@@ -162,14 +155,13 @@ export interface FileRoutesByFullPath {
   '/company': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
   '/customer': typeof AuthenticatedLayoutCustomerIndexRoute
   '/marketer': typeof AuthenticatedLayoutMarketerIndexRoute
+  '/company/admin': typeof AuthenticatedLayoutCompanyLayoutAdminRoute
   '/company/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   '/company/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/company/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/company/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
   '/company/products': typeof AuthenticatedLayoutCompanyLayoutProductsRoute
-  '/company/admins/$adminId': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute
   '/company/marketers/$marketerId': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute
-  '/company/admins': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/company/marketers': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -182,14 +174,13 @@ export interface FileRoutesByTo {
   '/company': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
   '/customer': typeof AuthenticatedLayoutCustomerIndexRoute
   '/marketer': typeof AuthenticatedLayoutMarketerIndexRoute
+  '/company/admin': typeof AuthenticatedLayoutCompanyLayoutAdminRoute
   '/company/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   '/company/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/company/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/company/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
   '/company/products': typeof AuthenticatedLayoutCompanyLayoutProductsRoute
-  '/company/admins/$adminId': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute
   '/company/marketers/$marketerId': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute
-  '/company/admins': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/company/marketers': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
 }
 export interface FileRoutesById {
@@ -206,14 +197,13 @@ export interface FileRoutesById {
   '/_authenticated/_layout/company/_layout': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
   '/_authenticated/_layout/customer/': typeof AuthenticatedLayoutCustomerIndexRoute
   '/_authenticated/_layout/marketer/': typeof AuthenticatedLayoutMarketerIndexRoute
+  '/_authenticated/_layout/company/_layout/admin': typeof AuthenticatedLayoutCompanyLayoutAdminRoute
   '/_authenticated/_layout/company/_layout/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   '/_authenticated/_layout/company/_layout/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/_authenticated/_layout/company/_layout/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/_authenticated/_layout/company/_layout/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
   '/_authenticated/_layout/company/_layout/products': typeof AuthenticatedLayoutCompanyLayoutProductsRoute
-  '/_authenticated/_layout/company/_layout/admins/$adminId': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute
   '/_authenticated/_layout/company/_layout/marketers/$marketerId': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute
-  '/_authenticated/_layout/company/_layout/admins/': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/_authenticated/_layout/company/_layout/marketers/': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
 }
 export interface FileRouteTypes {
@@ -228,14 +218,13 @@ export interface FileRouteTypes {
     | '/company'
     | '/customer'
     | '/marketer'
+    | '/company/admin'
     | '/company/analytics'
     | '/company/applications'
     | '/company/overview'
     | '/company/payouts'
     | '/company/products'
-    | '/company/admins/$adminId'
     | '/company/marketers/$marketerId'
-    | '/company/admins'
     | '/company/marketers'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -248,14 +237,13 @@ export interface FileRouteTypes {
     | '/company'
     | '/customer'
     | '/marketer'
+    | '/company/admin'
     | '/company/analytics'
     | '/company/applications'
     | '/company/overview'
     | '/company/payouts'
     | '/company/products'
-    | '/company/admins/$adminId'
     | '/company/marketers/$marketerId'
-    | '/company/admins'
     | '/company/marketers'
   id:
     | '__root__'
@@ -271,14 +259,13 @@ export interface FileRouteTypes {
     | '/_authenticated/_layout/company/_layout'
     | '/_authenticated/_layout/customer/'
     | '/_authenticated/_layout/marketer/'
+    | '/_authenticated/_layout/company/_layout/admin'
     | '/_authenticated/_layout/company/_layout/analytics'
     | '/_authenticated/_layout/company/_layout/applications'
     | '/_authenticated/_layout/company/_layout/overview'
     | '/_authenticated/_layout/company/_layout/payouts'
     | '/_authenticated/_layout/company/_layout/products'
-    | '/_authenticated/_layout/company/_layout/admins/$adminId'
     | '/_authenticated/_layout/company/_layout/marketers/$marketerId'
-    | '/_authenticated/_layout/company/_layout/admins/'
     | '/_authenticated/_layout/company/_layout/marketers/'
   fileRoutesById: FileRoutesById
 }
@@ -413,18 +400,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutAnalyticsRouteImport
       parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
     }
+    '/_authenticated/_layout/company/_layout/admin': {
+      id: '/_authenticated/_layout/company/_layout/admin'
+      path: '/admin'
+      fullPath: '/company/admin'
+      preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutAdminRouteImport
+      parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
+    }
     '/_authenticated/_layout/company/_layout/marketers/': {
       id: '/_authenticated/_layout/company/_layout/marketers/'
       path: '/marketers'
       fullPath: '/company/marketers'
       preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRouteImport
-      parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
-    }
-    '/_authenticated/_layout/company/_layout/admins/': {
-      id: '/_authenticated/_layout/company/_layout/admins/'
-      path: '/admins'
-      fullPath: '/company/admins'
-      preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRouteImport
       parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
     }
     '/_authenticated/_layout/company/_layout/marketers/$marketerId': {
@@ -434,30 +421,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRouteImport
       parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
     }
-    '/_authenticated/_layout/company/_layout/admins/$adminId': {
-      id: '/_authenticated/_layout/company/_layout/admins/$adminId'
-      path: '/admins/$adminId'
-      fullPath: '/company/admins/$adminId'
-      preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdRouteImport
-      parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
-    }
   }
 }
 
 interface AuthenticatedLayoutCompanyLayoutRouteChildren {
+  AuthenticatedLayoutCompanyLayoutAdminRoute: typeof AuthenticatedLayoutCompanyLayoutAdminRoute
   AuthenticatedLayoutCompanyLayoutAnalyticsRoute: typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   AuthenticatedLayoutCompanyLayoutApplicationsRoute: typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   AuthenticatedLayoutCompanyLayoutOverviewRoute: typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   AuthenticatedLayoutCompanyLayoutPayoutsRoute: typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
   AuthenticatedLayoutCompanyLayoutProductsRoute: typeof AuthenticatedLayoutCompanyLayoutProductsRoute
-  AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute: typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute
   AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute: typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute
-  AuthenticatedLayoutCompanyLayoutAdminsIndexRoute: typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   AuthenticatedLayoutCompanyLayoutMarketersIndexRoute: typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
 }
 
 const AuthenticatedLayoutCompanyLayoutRouteChildren: AuthenticatedLayoutCompanyLayoutRouteChildren =
   {
+    AuthenticatedLayoutCompanyLayoutAdminRoute:
+      AuthenticatedLayoutCompanyLayoutAdminRoute,
     AuthenticatedLayoutCompanyLayoutAnalyticsRoute:
       AuthenticatedLayoutCompanyLayoutAnalyticsRoute,
     AuthenticatedLayoutCompanyLayoutApplicationsRoute:
@@ -468,12 +449,8 @@ const AuthenticatedLayoutCompanyLayoutRouteChildren: AuthenticatedLayoutCompanyL
       AuthenticatedLayoutCompanyLayoutPayoutsRoute,
     AuthenticatedLayoutCompanyLayoutProductsRoute:
       AuthenticatedLayoutCompanyLayoutProductsRoute,
-    AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute:
-      AuthenticatedLayoutCompanyLayoutAdminsAdminIdRoute,
     AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute:
       AuthenticatedLayoutCompanyLayoutMarketersMarketerIdRoute,
-    AuthenticatedLayoutCompanyLayoutAdminsIndexRoute:
-      AuthenticatedLayoutCompanyLayoutAdminsIndexRoute,
     AuthenticatedLayoutCompanyLayoutMarketersIndexRoute:
       AuthenticatedLayoutCompanyLayoutMarketersIndexRoute,
   }

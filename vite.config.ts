@@ -27,6 +27,7 @@ export default defineConfig({
       "@store": path.resolve(__dirname, "./src/store"),
       "@mutations": path.resolve(__dirname, "./src/mutations"),
       "@services": path.resolve(__dirname, "./src/services"),
+      "@theme": path.resolve(__dirname, "./src/theme"),
     },
   },
 });

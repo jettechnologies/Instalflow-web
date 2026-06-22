@@ -6,15 +6,35 @@ export interface StandardResponse<T> {
   status: number;
   message?: string;
 }
+export interface Pagination {
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export type PaginatedData<K extends string, T> = {
+  [P in K]: T[];
+} & {
+  pagination: Pagination;
+};
+
+export type UrlParams = {
+  page: string;
+  limit: string;
+  sortOrder: "desc" | "asc";
+};
 
 const ACCESS_TOKEN_KEY = "ifl_access_token";
-const CSRF_TOKEN_KEY = "ifl_csrf_token";
 
 const COOKIE_OPTIONS = createCookieOptions({ maxAge: 60 * 60 * 24 });
 
+export const LIMIT = "10";
+
 let _accessToken: string | null =
   (getCookie(ACCESS_TOKEN_KEY) as string) ?? null;
-let _csrfToken: string | null = (getCookie(CSRF_TOKEN_KEY) as string) ?? null;
 
 export const setAuthToken = (token: string | null) => {
   _accessToken = token;
@@ -25,18 +45,6 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
-export const setCsrfToken = (token: string | null) => {
-  _csrfToken = token;
-  if (token) {
-    setCookie(CSRF_TOKEN_KEY, token, {
-      ...COOKIE_OPTIONS,
-      maxAge: 60 * 60 * 24 * 3 * 1000,
-    });
-  } else {
-    deleteCookie(CSRF_TOKEN_KEY, { path: "/" });
-  }
-};
-
 export const getAuthToken = (): string | null =>
   _accessToken ?? (getCookie(ACCESS_TOKEN_KEY) as string | null) ?? null;
 
@@ -44,34 +52,24 @@ const BASE_URL =
   import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE_URL || "";
 
 const ensureCsrfToken = async (): Promise<string | null> => {
-  const fromCookie = getCookie(CSRF_TOKEN_KEY) as string | null;
-  if (fromCookie) {
-    _csrfToken = fromCookie;
-    return fromCookie;
-  }
-  if (_csrfToken) return _csrfToken;
-
   try {
     const response = await fetch(`${BASE_URL}/csrf-token`, {
       method: "GET",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
     });
-    if (response.ok) {
-      const data = await response.json();
-      const token: string | undefined = data.csrfToken ?? data.token;
-      if (token) {
-        setCsrfToken(token);
-        return token;
-      }
+    if (!response.ok) return null;
+    const data = await response.json();
+    const token = data.csrfToken;
+
+    if (token) {
+      return token;
     }
+
+    return null;
   } catch (err) {
-    console.warn(
-      "[apiService] Could not retrieve csrf-token automatically",
-      err
-    );
+    console.warn("[apiService] CSRF fetch failed", err);
+    return null;
   }
-  return null;
 };
 
 const buildHeaders = (
@@ -89,21 +87,85 @@ const buildMutationHeaders = async (
   extra?: Record<string, string>
 ): Promise<Record<string, string>> => {
   const headers = buildHeaders(extra);
+
   const csrf = await ensureCsrfToken();
-  if (csrf) headers["x-csrf-token"] = csrf;
+
+  if (csrf) {
+    headers["x-csrf-token"] = csrf;
+  }
+
   return headers;
+};
+
+// const extractErrorMessage = async (
+//   response: Response,
+//   fallback: string
+// ): Promise<never> => {
+//   const text = await response.text();
+//   let message = fallback;
+//   try {
+//     const json = JSON.parse(text);
+//     message = json.message ?? message;
+//   } catch (_) {}
+//   throw new Error(message);
+// };
+
+const handleUnauthorized = async () => {
+  try {
+    setAuthToken(null);
+
+    await fetch(`${BASE_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    if (window.location.pathname !== "/login") {
+      const redirect = encodeURIComponent(
+        window.location.pathname + window.location.search
+      );
+
+      window.location.replace(`/login?redirect=${redirect}`);
+    }
+  }
 };
 
 const extractErrorMessage = async (
   response: Response,
   fallback: string
 ): Promise<never> => {
-  const text = await response.text();
   let message = fallback;
+
   try {
-    const json = JSON.parse(text);
-    message = json.message ?? message;
-  } catch (_) {}
+    const data = await response.clone().json();
+
+    message = data?.message ?? fallback;
+
+    if (response.status === 401) {
+      await handleUnauthorized();
+
+      throw new Error(
+        message || "Your session has expired. Please login again."
+      );
+    }
+  } catch (err) {
+    if (response.status === 401) {
+      await handleUnauthorized();
+
+      throw new Error("Your session has expired. Please login again.");
+    }
+
+    try {
+      const text = await response.text();
+      const data = JSON.parse(text);
+
+      message = data?.message ?? fallback;
+    } catch {
+      message = fallback;
+    }
+  }
+
   throw new Error(message);
 };
 

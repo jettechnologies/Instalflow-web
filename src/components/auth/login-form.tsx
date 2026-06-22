@@ -14,9 +14,10 @@ import type { UserRole } from "@utils/types";
 
 interface LoginFormProps {
   onRegisterClick: () => void;
+  redirect?: string;
 }
 
-export const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
+export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
   const { login } = useAuth();
 
   const { openToast } = useToastContext();
@@ -26,22 +27,22 @@ export const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
     switch (userRoles) {
       case "COMPANY":
         navigate({
-          to: "/company",
+          to: redirect || "/company/overview",
         });
         return;
       case "ADMIN":
         navigate({
-          to: "/company",
+          to: redirect || "/company/overview",
         });
         return;
       case "MARKETER":
         navigate({
-          to: "/marketer",
+          to: redirect || "/marketer/overview",
         });
         return;
       case "CUSTOMER":
         navigate({
-          to: "/customer",
+          to: redirect || "/customer/overview",
         });
 
         return;
@@ -49,6 +50,9 @@ export const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
       default:
         navigate({
           to: "/login",
+          search: {
+            redirect,
+          },
         });
     }
   };

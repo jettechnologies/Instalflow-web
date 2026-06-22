@@ -101,10 +101,9 @@ export const Step2Plans = ({ userData, onSuccess, onBack }: Step2Props) => {
       }
 
       SessionStorageHelper.remove("IFL_USER_DATA");
-      onSuccess?.();
 
-      // window.location.href = authorization_url;
       window.open(authorization_url, "_blank", "noopener,noreferrer");
+      onSuccess?.();
     } catch (error) {
       const errorMessage =
         error instanceof Error

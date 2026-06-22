@@ -26,23 +26,25 @@
   --warn-25: #fffaf0; /* Very light orange/yellow for warning background */
 
   /* Global Layout Core Bases */
-  --bg-layer-1: #0B0F1A;       /* Main application shell background & authentication viewports */
-  --bg-layer-2: #111827;       /* Form cards, modal containers, data dashboards, table backing panels */
-  --border-structural: #1F2937; /* Table crossbars, horizontal line splitters, section frames */
+  --bg-layer-1: #0b0f1a; /* Main application shell background & authentication viewports */
+  --bg-layer-2: #111827; /* Form cards, modal containers, data dashboards, table backing panels */
+  --border-structural: #1f2937; /* Table crossbars, horizontal line splitters, section frames */
 
   /* Operational Brand Anchors */
-  --brand-primary: #7C3AED;    /* Premium Corporate Purple: Focal interactions, active pagination indices, CTAs */
-  --brand-dark: #1E3A8A;       /* Enterprise Security Blue: Chart fill anchors, background depths, hover indicators */
-  --brand-gradient: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+  --brand-primary: #7c3aed; /* Premium Corporate Purple: Focal interactions, active pagination indices, CTAs */
+  --brand-dark: #1e3a8a; /* Enterprise Security Blue: Chart fill anchors, background depths, hover indicators */
+  --brand-gradient: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
 
   /* Typography Color Scales */
-  --text-primary: #F9FAFB;     /* Headings, real-time metrics numerical value metrics, clear column text */
-  --text-secondary: #9CA3AF;   /* Field inputs tracking, interface copy labels, navigation links */
-  --text-muted: #6B7280;       /* Transaction log references, internal timestamp entries, metadata subtexts */
+  --text-primary: #f9fafb; /* Headings, real-time metrics numerical value metrics, clear column text */
+  --text-secondary: #9ca3af; /* Field inputs tracking, interface copy labels, navigation links */
+  --text-muted: #6b7280; /* Transaction log references, internal timestamp entries, metadata subtexts */
 
   /* Lifecycle Risk State Indicators */
-  --status-success: #10B981;  /* Cleared ledgers, active payment terms, validated KYC, approved states */
-  --status-warning: #F59E0B;  /* Processing queues, upcoming maturity horizons, unverified entries */
-  --status-danger: #EF4444;   /* Overdue financing items, contract breach items, invalid signatures, rejections */
-  --status-info: #06B6D4;     /* Running sync workers, clearing processes active, notifications unread */
+  --status-success: #10b981; /* Cleared ledgers, active payment terms, validated KYC, approved states */
+  --status-warning: #f59e0b; /* Processing queues, upcoming maturity horizons, unverified entries */
+  --status-danger: #ef4444; /* Overdue financing items, contract breach items, invalid signatures, rejections */
+  --status-info: #06b6d4; /* Running sync workers, clearing processes active, notifications unread */
+
+  --jetbrains-mono: "JetBrains Mono", monospace;
 }

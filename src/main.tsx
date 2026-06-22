@@ -7,6 +7,7 @@ import { ToastProvider, AuthProvider, useAuth } from "./context";
 import TanstackQueryProvider from "./providers/tanstack-provider";
 import { useState } from "react";
 import type { QueryClient } from "@tanstack/react-query";
+import theme from "@theme";
 
 const router = createRouter({
   routeTree,
@@ -34,7 +35,7 @@ function App() {
   );
 
   return (
-    <ChakraProvider resetCSS>
+    <ChakraProvider theme={theme} resetCSS>
       <ToastProvider>
         <AuthProvider>
           <TanstackQueryProvider onClientReady={setQueryClient}>

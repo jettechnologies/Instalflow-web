@@ -4,13 +4,26 @@ import { LoginForm } from "@components/auth/login-form";
 import { LeftPanel } from "@components/shared/left-panel";
 import { useNavigate } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
+import * as Yup from "yup";
+
+export const LoginSearch = Yup.object({
+  redirect: Yup.string().optional(),
+});
+
+export type LoginSearchType = Yup.InferType<typeof LoginSearch>;
 
 export const Route = createFileRoute("/(auth)/login")({
+  validateSearch: (search) =>
+    LoginSearch.validateSync(search, {
+      abortEarly: false,
+      stripUnknown: true,
+    }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
 
   return (
     <Box
@@ -34,6 +47,7 @@ function RouteComponent() {
                 search: { view: "onboarding-step1" },
               })
             }
+            redirect={redirect}
           />
         </LeftPanel>
       </Box>

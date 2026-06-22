@@ -1,3 +1,5 @@
+import { format, isValid } from "date-fns";
+
 export const createCookieOptions = ({
   maxAge = 60 * 60 * 24 * 7,
 }: {
@@ -22,6 +24,25 @@ export const formatCurrency = (
     currency,
     ...options,
   }).format(value);
+
+export const DATE_FORMATS = {
+  date: "dd MMM yyyy",
+  date_time: "dd MMM yyyy, HH:mm",
+  human_friendly: "PPP",
+} as const;
+
+export type DateFormatType = keyof typeof DATE_FORMATS;
+
+export const formatDate = (
+  date?: string | Date | null,
+  type: DateFormatType = "date"
+) => {
+  if (!date) return "-";
+
+  const parsedDate = new Date(date);
+
+  return isValid(parsedDate) ? format(parsedDate, DATE_FORMATS[type]) : "-";
+};
 
 export const USER_COOKIE_KEY = "ifl_user";
 export const TOKEN_COOKIE_KEY = "ifl_access_token";

@@ -2,33 +2,39 @@ import React from "react";
 import {
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Input,
   InputGroup,
   InputRightElement,
+  InputLeftElement,
   Box,
   Text,
   Textarea,
-  InputLeftElement,
-  type InputProps as ChakraInputProps,
-  type TextareaProps as ChakraTextareaProps,
   Switch,
   Flex,
   Select,
+  type InputProps as ChakraInputProps,
+  type TextareaProps as ChakraTextareaProps,
   type FormControlProps,
   type CheckboxProps,
   chakra,
   useCheckbox,
 } from "@chakra-ui/react";
-import { Check } from "@phosphor-icons/react";
 import { useField } from "formik";
-import { WarningCircle, Eye, EyeSlash } from "@phosphor-icons/react";
+import { WarningCircle, Eye, EyeSlash, Check } from "@phosphor-icons/react";
 
-type TextTransform = "uppercase" | "capitalize" | "lowercase";
+type TextTransform = "uppercase" | "capitalize" | "lowercase" | "none";
+
+const LABEL_BASE = {
+  fontSize: "12px",
+  fontWeight: 500,
+  mb: "6px",
+  color: "textSecondary",
+} as const;
 
 export interface CustomInputProps extends ChakraInputProps {
   name: string;
   type?: string;
-  height?: string;
   label?: string;
   labelInfo?: string;
   labelTextTransform?: TextTransform;
@@ -36,245 +42,215 @@ export interface CustomInputProps extends ChakraInputProps {
   required?: boolean;
   password?: boolean;
   placeholder?: string;
-  size?: string;
-  radius?: string | number | {};
+  radius?: string | number | Record<string, unknown>;
   boldLabel?: boolean;
   icon?: React.ReactElement;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-interface InputProps extends ChakraTextareaProps {
-  name: string;
-  type?: string;
-  height?: string;
-  label?: string;
-  labelInfo?: string;
-  labelTextTransform?: TextTransform;
-  labelColor?: string;
-  required?: boolean;
-  password?: boolean;
-  placeholder?: string;
-  size?: string;
-  radius?: string | number | {};
-  boldLabel?: boolean;
-  borderColor?: string;
-  icon?: React.ReactElement;
 }
 
 export const InputField = ({
   name,
   label,
   type = "text",
-  radius = "8px",
+  radius,
   placeholder,
   password,
   labelInfo,
   labelColor,
-  labelTextTransform = "capitalize",
+  labelTextTransform = "none",
   boldLabel = false,
   icon,
   onChange,
   ...props
 }: CustomInputProps) => {
   const [field, meta] = useField(name);
-
-  const handleShow = React.useCallback(() => {
-    setShow((prevShow) => !prevShow);
-  }, []);
-
   const [show, setShow] = React.useState(false);
+  const handleShow = React.useCallback(() => setShow((s) => !s), []);
 
+  const isInvalid = Boolean(meta.touched && meta.error);
   const inputType = password && show ? "text" : type;
-  const inputBorderRadius = typeof radius === "string" ? radius : `${radius}px`;
+  // The theme's `instalflow` Input variant already supplies the 12px default radius —
+  // only override it when the caller explicitly asks for something else.
+  const radiusOverride =
+    radius !== undefined
+      ? typeof radius === "string"
+        ? radius
+        : `${radius}px`
+      : undefined;
 
-  const inputStyle = {
-    fontSize: "sm",
-    background: "#fff",
-    height: "56px",
-    borderRadius: inputBorderRadius,
-    border: "1px solid var(--neutral-200)",
-  };
-
-  const errorStyle = {
-    color: "var(--deep-blood)",
-    fontSize: "sm",
-    pt: ".3em",
-  };
-
-  const inputPropsWithStyle = {
-    ...inputStyle,
+  const sharedInputProps = {
+    id: name,
+    placeholder,
+    borderRadius: radiusOverride,
+    _placeholder: {
+      color: "textMuted",
+      fontSize: "14px",
+      fontWeight: 400,
+    },
+    className: isInvalid ? "shake" : undefined,
     ...props,
     ...field,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      field.onChange(e);
+      onChange?.(e);
+    },
   };
 
-  const errorProps = meta.touched && meta.error ? errorStyle : null;
-
   return (
-    <FormControl width="100%">
-      <FormLabel
-        fontSize="14px"
-        textTransform={labelTextTransform || "lowercase"}
-        lineHeight="20px"
-        fontWeight="400"
-        color={labelColor || "var(--brand-primary)"}>
-        {label}{" "}
-        {labelInfo && (
-          <Text as="span" color="var(--deep-blood)" display="inline">
-            *{labelInfo}
-          </Text>
-        )}
-      </FormLabel>
+    <FormControl width="100%" isInvalid={isInvalid}>
+      {label && (
+        <FormLabel
+          htmlFor={name}
+          textTransform={labelTextTransform}
+          fontWeight={boldLabel ? 600 : LABEL_BASE.fontWeight}
+          color={labelColor ?? LABEL_BASE.color}
+          fontSize={LABEL_BASE.fontSize}
+          mb={LABEL_BASE.mb}>
+          {label}
+          {labelInfo && (
+            <Text as="span" color="statusDanger" display="inline" ml="4px">
+              *{labelInfo}
+            </Text>
+          )}
+        </FormLabel>
+      )}
 
       {password ? (
         <InputGroup>
-          <Input
-            autoComplete="true"
-            type={inputType}
-            placeholder={placeholder}
-            _placeholder={{
-              fontWeight: "400",
-              color: "var(--input-placeholder)",
-              fontSize: "14px",
-              lineHeight: "19px",
-              textTransform: "capitalize",
-            }}
-            className={meta.touched && meta.error ? "shake" : ""}
-            {...inputPropsWithStyle}
-            onChange={(e) => {
-              field.onChange(e);
-              onChange?.(e);
-            }}
-          />
           {icon && (
-            <InputLeftElement
-              width="3rem"
-              height="100%"
-              display="flex"
-              alignItems="center">
+            <InputLeftElement h="44px" w="44px">
               {icon}
             </InputLeftElement>
           )}
-          {!!errorProps || !!meta.error ? (
-            <InputRightElement
-              width="3rem"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              cursor="pointer">
-              <WarningCircle color="var(--deep-blood)" size="18" />
-            </InputRightElement>
-          ) : (
-            <InputRightElement
-              width="3rem"
-              height="100%"
-              display="flex"
-              alignItems="center">
-              <Box onClick={handleShow} _hover={{ cursor: "pointer" }}>
-                {!show ? (
-                  <EyeSlash color="var(--icon-dark)" size="18" />
+          <Input
+            autoComplete="current-password"
+            type={inputType}
+            pl={icon ? "44px" : undefined}
+            {...sharedInputProps}
+          />
+          <InputRightElement h="44px" w="44px">
+            {isInvalid ? (
+              <WarningCircle
+                color="var(--chakra-colors-statusDanger)"
+                size={18}
+              />
+            ) : (
+              <Box onClick={handleShow} cursor="pointer">
+                {show ? (
+                  <Eye color="var(--chakra-colors-textSecondary)" size={18} />
                 ) : (
-                  <Eye color="var(--icon-dark)" size="18" />
+                  <EyeSlash
+                    color="var(--chakra-colors-textSecondary)"
+                    size={18}
+                  />
                 )}
               </Box>
-            </InputRightElement>
-          )}
+            )}
+          </InputRightElement>
         </InputGroup>
       ) : (
         <InputGroup>
-          <Input
-            autoComplete="true"
-            type={type}
-            placeholder={placeholder}
-            _placeholder={{
-              fontWeight: "400",
-              color: "var(--input-placeholder)",
-              fontSize: "14px",
-              lineHeight: "19px",
-            }}
-            className={meta.touched && meta.error ? "shake" : ""}
-            {...inputPropsWithStyle}
-            onChange={(e) => {
-              field.onChange(e);
-              onChange?.(e);
-            }}
-          />
           {icon && (
-            <InputLeftElement
-              height="100%"
-              width="3rem"
-              display="flex"
-              alignItems="center">
+            <InputLeftElement h="44px" w="44px">
               {icon}
             </InputLeftElement>
           )}
-          {errorProps && meta.error ? (
-            <InputRightElement
-              width="3rem"
-              height="100%"
-              cursor="pointer"
-              display="flex"
-              alignItems="center">
-              <WarningCircle color="var(--deep-blood)" size="18" />
+          <Input
+            autoComplete="off"
+            type={type}
+            pl={icon ? "44px" : undefined}
+            {...sharedInputProps}
+          />
+          {isInvalid && (
+            <InputRightElement h="44px" w="44px" cursor="pointer">
+              <WarningCircle
+                color="var(--chakra-colors-statusDanger)"
+                size={18}
+              />
             </InputRightElement>
-          ) : null}
+          )}
         </InputGroup>
       )}
 
-      {errorProps && meta.error && <Text {...errorProps}>{meta.error}</Text>}
+      <FormErrorMessage fontSize="12px" color="statusDanger">
+        {meta.error}
+      </FormErrorMessage>
     </FormControl>
   );
 };
+
+interface TextAreaFieldProps extends ChakraTextareaProps {
+  name: string;
+  label?: string;
+  labelColor?: string;
+  height?: string;
+  radius?: string | number | Record<string, unknown>;
+  borderColor?: string;
+  placeholder?: string;
+}
 
 export const TextAreaField = ({
   name,
   label,
   radius,
   placeholder,
-  password,
   labelColor,
   height,
-  size,
   borderColor,
   ...props
-}: InputProps) => {
+}: TextAreaFieldProps) => {
   const [field, meta] = useField(name);
+  const isInvalid = Boolean(meta.touched && meta.error);
 
   return (
-    <>
-      <FormControl width="100%">
+    <FormControl width="100%" isInvalid={isInvalid}>
+      {label && (
         <FormLabel
-          fontSize="16px"
-          lineHeight="22px"
-          fontWeight="400"
-          color={labelColor || "var(--brand-primary)"}>
+          htmlFor={name}
+          fontSize={LABEL_BASE.fontSize}
+          fontWeight={LABEL_BASE.fontWeight}
+          color={labelColor ?? LABEL_BASE.color}
+          mb={LABEL_BASE.mb}>
           {label}
         </FormLabel>
+      )}
 
-        <Textarea
-          autoComplete="true"
-          fontSize="sm"
-          placeholder={placeholder}
-          borderRadius={radius ? radius : "8px"}
-          border={`1px solid ${borderColor || "var(--neutral-200)"}`}
-          className={meta.touched && meta.error ? "shake" : ""}
-          _placeholder={{
-            fontWeight: "400",
-            color: "var(--input-placeholder)",
-            fontSize: "16px",
-            lineHeight: "22px",
-          }}
-          height={height || "200px"}
-          {...props}
-          {...field}
-        />
+      <Textarea
+        id={name}
+        placeholder={placeholder}
+        borderRadius={
+          radius
+            ? typeof radius === "string"
+              ? radius
+              : `${radius}px`
+            : "12px"
+        }
+        bg="bgLayer1"
+        border="1px solid"
+        borderColor={borderColor ?? "borderStructural"}
+        color="textPrimary"
+        _placeholder={{ color: "textMuted", fontSize: "14px" }}
+        _hover={{ borderColor: "#2B3647" }}
+        _focus={{
+          borderColor: "brand.500",
+          boxShadow: "0 0 0 3px rgba(124,58,237,0.2)",
+          outline: "none",
+        }}
+        _invalid={{
+          borderColor: "statusDanger",
+          boxShadow: "0 0 0 3px rgba(239,68,68,0.18)",
+        }}
+        height={height ?? "200px"}
+        fontSize="sm"
+        className={isInvalid ? "shake" : undefined}
+        {...props}
+        {...field}
+      />
 
-        {meta.touched && meta.error ? (
-          <Text color="var(--deep-blood)" fontSize="sm" pt=".3em">
-            {meta.error}
-          </Text>
-        ) : null}
-      </FormControl>
-    </>
+      <FormErrorMessage fontSize="12px" color="statusDanger">
+        {meta.error}
+      </FormErrorMessage>
+    </FormControl>
   );
 };
 
@@ -284,8 +260,7 @@ type CustomSwitchProps = FormControlProps & {
   labelColor?: string;
   labelWeight?: string | number;
   labelSize?: string | number;
-  labelPosition?: string;
-  columns?: { base?: number; lg?: number };
+  labelPosition?: "left" | "right";
   isRequired?: boolean;
   size?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -296,7 +271,7 @@ export const SwitchField = ({
   label,
   labelSize,
   labelWeight,
-  labelColor = "var(--brand-primary)",
+  labelColor,
   labelPosition = "left",
   isRequired = false,
   onChange,
@@ -304,115 +279,139 @@ export const SwitchField = ({
   ...props
 }: CustomSwitchProps) => {
   const [field, meta, helpers] = useField(name);
+  const computedFontSize =
+    typeof labelSize === "number" ? `${labelSize}px` : (labelSize ?? "12px");
 
-  const fontSize = typeof labelSize === "number" && `${labelSize}px`;
+  const labelEl = label ? (
+    <FormLabel
+      htmlFor={name}
+      color={labelColor ?? "textSecondary"}
+      fontSize={computedFontSize}
+      fontWeight={labelWeight ?? LABEL_BASE.fontWeight}
+      mb="0">
+      {label}
+      {isRequired && (
+        <Text as="span" color="statusDanger" ml="4px">
+          *
+        </Text>
+      )}
+    </FormLabel>
+  ) : null;
 
   return (
-    <FormControl as={Flex} maxW="fit-content" {...props}>
-      {label && labelPosition === "left" && (
-        <FormLabel
-          htmlFor={name}
-          color={labelColor}
-          fontSize={fontSize || "14px"}
-          fontWeight={labelWeight || "normal"}
-          mb="0">
-          {label}
-          {isRequired && (
-            <Text as="span" color="red.500" ml="1">
-              *
-            </Text>
-          )}
-        </FormLabel>
-      )}
+    <FormControl
+      as={Flex}
+      alignItems="center"
+      gap="8px"
+      maxW="fit-content"
+      {...props}>
+      {labelPosition === "left" && labelEl}
+
       <Switch
         id={name}
         isChecked={field.value}
-        size={size || "md"}
+        size={size ?? "md"}
         onChange={(e) => {
           helpers.setValue(e.target.checked);
           onChange?.(e);
         }}
         sx={{
           ".chakra-switch__track": {
-            bg: field.value ? "var(--coral)" : "gray.200",
+            bg: field.value ? "brand.500" : "borderStructural",
+            _checked: { bg: "brand.500" },
+          },
+          ".chakra-switch__thumb": {
+            bg: "textPrimary",
           },
         }}
       />
-      {label && labelPosition === "right" && (
-        <FormLabel
-          htmlFor={name}
-          color={labelColor}
-          fontSize={fontSize || "14px"}
-          fontWeight={labelWeight || "normal"}
-          mb="0"
-          ml="1rem">
-          {label}
-          {isRequired && (
-            <Text as="span" color="red.500" ml="1">
-              *
-            </Text>
-          )}
-        </FormLabel>
-      )}
-      {meta.touched && meta.error ? (
-        <Text color="red.500" fontSize="sm">
+
+      {labelPosition === "right" && labelEl}
+
+      {meta.touched && meta.error && (
+        <Text color="statusDanger" fontSize="12px" mt="4px">
           {meta.error}
         </Text>
-      ) : null}
+      )}
     </FormControl>
   );
 };
 
-type SelectProps = FormControlProps & {
+type SelectFieldProps = FormControlProps & {
   name: string;
   label?: string;
   labelColor?: string;
   options: Array<{ value: string | number; label: string }>;
   isRequired?: boolean;
+  placeholder?: string;
 };
 
-export const ChakraSelectField: React.FC<SelectProps> = ({
+export const ChakraSelectField: React.FC<SelectFieldProps> = ({
   name,
   label,
-  labelColor = "var(--brand-primary)",
+  labelColor,
   options,
   isRequired = false,
+  placeholder = "Select an option",
   ...props
 }) => {
   const [field, meta, helpers] = useField(name);
+  const isInvalid = Boolean(meta.touched && meta.error);
 
   return (
-    <FormControl {...props}>
+    <FormControl isInvalid={isInvalid} {...props}>
       {label && (
-        <FormLabel htmlFor={name} color={labelColor}>
+        <FormLabel
+          htmlFor={name}
+          color={labelColor ?? LABEL_BASE.color}
+          fontSize={LABEL_BASE.fontSize}
+          fontWeight={LABEL_BASE.fontWeight}
+          mb={LABEL_BASE.mb}>
           {label}
           {isRequired && (
-            <Text as="span" color="red.500" ml="1">
+            <Text as="span" color="statusDanger" ml="4px">
               *
             </Text>
           )}
         </FormLabel>
       )}
+
       <Select
         id={name}
         name={name}
         value={field.value}
+        onBlur={field.onBlur}
         onChange={(e) => helpers.setValue(e.target.value)}
-        onBlur={field.onBlur}>
-        <option value="" disabled>
-          Select an option
+        h="44px"
+        bg="bgLayer1"
+        border="1px solid"
+        borderColor={isInvalid ? "statusDanger" : "borderStructural"}
+        color={field.value ? "textPrimary" : "textMuted"}
+        borderRadius="12px"
+        fontSize="14px"
+        _hover={{ borderColor: "#2B3647" }}
+        _focus={{
+          borderColor: "brand.500",
+          boxShadow: "0 0 0 3px rgba(124,58,237,0.2)",
+          outline: "none",
+        }}
+        iconColor="var(--chakra-colors-textSecondary)">
+        <option value="" disabled style={{ background: "#111827" }}>
+          {placeholder}
         </option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
+        {options.map((opt) => (
+          <option
+            key={opt.value}
+            value={opt.value}
+            style={{ background: "#111827", color: "#F9FAFB" }}>
+            {opt.label}
           </option>
         ))}
       </Select>
-      {meta.touched && meta.error ? (
-        <Text color="red.500" fontSize="sm">
-          {meta.error}
-        </Text>
-      ) : null}
+
+      <FormErrorMessage fontSize="12px" color="statusDanger">
+        {meta.error}
+      </FormErrorMessage>
     </FormControl>
   );
 };
@@ -421,12 +420,11 @@ interface CustomCheckboxProps extends CheckboxProps {
   label: string;
   value?: string;
   isChecked?: boolean;
-  //   onChange?: (isChecked: boolean) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   spacing?: number | string;
   checkboxSize?: number | string;
-  labelProps?: any;
-  checkboxProps?: any;
+  labelProps?: Record<string, unknown>;
+  checkboxProps?: Record<string, unknown>;
 }
 
 export const CustomCheckbox = ({
@@ -435,7 +433,7 @@ export const CustomCheckbox = ({
   isChecked,
   onChange,
   spacing = 2,
-  checkboxSize = 4,
+  checkboxSize = "24px",
   labelProps,
   checkboxProps,
   ...rest
@@ -454,37 +452,529 @@ export const CustomCheckbox = ({
       display="flex"
       flexDirection="row-reverse"
       alignItems="center"
-      gridColumnGap={spacing}
+      gap={spacing}
       cursor="pointer"
       userSelect="none"
       justifyContent="space-between"
       {...rest}>
       <input {...getInputProps()} hidden />
 
-      {/* Checkbox visual */}
       <Flex
         alignItems="center"
         justifyContent="center"
-        border="1.5px solid var(--text-1)"
-        borderRadius="md"
+        border="1.5px solid"
+        borderColor={state.isChecked ? "brand.500" : "borderStructural"}
+        borderRadius="8px"
         w={checkboxSize}
         h={checkboxSize}
-        transition="all 0.2s"
-        _hover={{
-          borderColor: "green.500",
-        }}
-        boxSize="24px"
+        bg={state.isChecked ? "brand.500" : "bgLayer1"}
+        transition="all 0.15s ease"
+        _hover={{ borderColor: "brand.500" }}
+        boxSize={checkboxSize}
+        flexShrink={0}
         {...getCheckboxProps(checkboxProps)}>
-        {state.isChecked && <Check size={14} color="var(--text-1)" />}
+        {state.isChecked && <Check size={14} color="white" weight="bold" />}
       </Flex>
 
-      {/* Label text on the left */}
       <Text
-        color={state.isChecked ? "green.700" : "gray.700"}
-        fontWeight={state.isChecked ? "semibold" : "normal"}
+        fontSize="14px"
+        color={state.isChecked ? "textPrimary" : "textSecondary"}
+        fontWeight={state.isChecked ? 500 : 400}
+        transition="color 0.15s ease"
         {...getLabelProps(labelProps)}>
         {label}
       </Text>
     </chakra.label>
   );
 };
+
+// import React from "react";
+// import {
+//   FormControl,
+//   FormLabel,
+//   Input,
+//   InputGroup,
+//   InputRightElement,
+//   Box,
+//   Text,
+//   Textarea,
+//   InputLeftElement,
+//   type InputProps as ChakraInputProps,
+//   type TextareaProps as ChakraTextareaProps,
+//   Switch,
+//   Flex,
+//   Select,
+//   type FormControlProps,
+//   type CheckboxProps,
+//   chakra,
+//   useCheckbox,
+// } from "@chakra-ui/react";
+// import { Check } from "@phosphor-icons/react";
+// import { useField } from "formik";
+// import { WarningCircle, Eye, EyeSlash } from "@phosphor-icons/react";
+
+// type TextTransform = "uppercase" | "capitalize" | "lowercase";
+
+// export interface CustomInputProps extends ChakraInputProps {
+//   name: string;
+//   type?: string;
+//   height?: string;
+//   label?: string;
+//   labelInfo?: string;
+//   labelTextTransform?: TextTransform;
+//   labelColor?: string;
+//   required?: boolean;
+//   password?: boolean;
+//   placeholder?: string;
+//   size?: string;
+//   radius?: string | number | {};
+//   boldLabel?: boolean;
+//   icon?: React.ReactElement;
+//   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+// }
+
+// interface InputProps extends ChakraTextareaProps {
+//   name: string;
+//   type?: string;
+//   height?: string;
+//   label?: string;
+//   labelInfo?: string;
+//   labelTextTransform?: TextTransform;
+//   labelColor?: string;
+//   required?: boolean;
+//   password?: boolean;
+//   placeholder?: string;
+//   size?: string;
+//   radius?: string | number | {};
+//   boldLabel?: boolean;
+//   borderColor?: string;
+//   icon?: React.ReactElement;
+// }
+
+// export const InputField = ({
+//   name,
+//   label,
+//   type = "text",
+//   radius = "8px",
+//   placeholder,
+//   password,
+//   labelInfo,
+//   labelColor,
+//   labelTextTransform = "capitalize",
+//   boldLabel = false,
+//   icon,
+//   onChange,
+//   ...props
+// }: CustomInputProps) => {
+//   const [field, meta] = useField(name);
+
+//   const handleShow = React.useCallback(() => {
+//     setShow((prevShow) => !prevShow);
+//   }, []);
+
+//   const [show, setShow] = React.useState(false);
+
+//   const inputType = password && show ? "text" : type;
+//   const inputBorderRadius = typeof radius === "string" ? radius : `${radius}px`;
+
+//   const inputStyle = {
+//     fontSize: "sm",
+//     background: "#fff",
+//     height: "56px",
+//     borderRadius: inputBorderRadius,
+//     border: "1px solid var(--neutral-200)",
+//   };
+
+//   const errorStyle = {
+//     color: "var(--deep-blood)",
+//     fontSize: "sm",
+//     pt: ".3em",
+//   };
+
+//   const inputPropsWithStyle = {
+//     ...inputStyle,
+//     ...props,
+//     ...field,
+//   };
+
+//   const errorProps = meta.touched && meta.error ? errorStyle : null;
+
+//   return (
+//     <FormControl width="100%">
+//       <FormLabel
+//         fontSize="14px"
+//         textTransform={labelTextTransform || "lowercase"}
+//         lineHeight="20px"
+//         fontWeight="400"
+//         color={labelColor || "var(--brand-primary)"}>
+//         {label}{" "}
+//         {labelInfo && (
+//           <Text as="span" color="var(--deep-blood)" display="inline">
+//             *{labelInfo}
+//           </Text>
+//         )}
+//       </FormLabel>
+
+//       {password ? (
+//         <InputGroup>
+//           <Input
+//             autoComplete="true"
+//             type={inputType}
+//             placeholder={placeholder}
+//             _placeholder={{
+//               fontWeight: "400",
+//               color: "var(--input-placeholder)",
+//               fontSize: "14px",
+//               lineHeight: "19px",
+//               textTransform: "capitalize",
+//             }}
+//             className={meta.touched && meta.error ? "shake" : ""}
+//             {...inputPropsWithStyle}
+//             onChange={(e) => {
+//               field.onChange(e);
+//               onChange?.(e);
+//             }}
+//           />
+//           {icon && (
+//             <InputLeftElement
+//               width="3rem"
+//               height="100%"
+//               display="flex"
+//               alignItems="center">
+//               {icon}
+//             </InputLeftElement>
+//           )}
+//           {!!errorProps || !!meta.error ? (
+//             <InputRightElement
+//               width="3rem"
+//               height="100%"
+//               display="flex"
+//               alignItems="center"
+//               cursor="pointer">
+//               <WarningCircle color="var(--deep-blood)" size="18" />
+//             </InputRightElement>
+//           ) : (
+//             <InputRightElement
+//               width="3rem"
+//               height="100%"
+//               display="flex"
+//               alignItems="center">
+//               <Box onClick={handleShow} _hover={{ cursor: "pointer" }}>
+//                 {!show ? (
+//                   <EyeSlash color="var(--icon-dark)" size="18" />
+//                 ) : (
+//                   <Eye color="var(--icon-dark)" size="18" />
+//                 )}
+//               </Box>
+//             </InputRightElement>
+//           )}
+//         </InputGroup>
+//       ) : (
+//         <InputGroup>
+//           <Input
+//             autoComplete="true"
+//             type={type}
+//             placeholder={placeholder}
+//             _placeholder={{
+//               fontWeight: "400",
+//               color: "var(--input-placeholder)",
+//               fontSize: "14px",
+//               lineHeight: "19px",
+//             }}
+//             className={meta.touched && meta.error ? "shake" : ""}
+//             {...inputPropsWithStyle}
+//             onChange={(e) => {
+//               field.onChange(e);
+//               onChange?.(e);
+//             }}
+//           />
+//           {icon && (
+//             <InputLeftElement
+//               height="100%"
+//               width="3rem"
+//               display="flex"
+//               alignItems="center">
+//               {icon}
+//             </InputLeftElement>
+//           )}
+//           {errorProps && meta.error ? (
+//             <InputRightElement
+//               width="3rem"
+//               height="100%"
+//               cursor="pointer"
+//               display="flex"
+//               alignItems="center">
+//               <WarningCircle color="var(--deep-blood)" size="18" />
+//             </InputRightElement>
+//           ) : null}
+//         </InputGroup>
+//       )}
+
+//       {errorProps && meta.error && <Text {...errorProps}>{meta.error}</Text>}
+//     </FormControl>
+//   );
+// };
+
+// export const TextAreaField = ({
+//   name,
+//   label,
+//   radius,
+//   placeholder,
+//   password,
+//   labelColor,
+//   height,
+//   size,
+//   borderColor,
+//   ...props
+// }: InputProps) => {
+//   const [field, meta] = useField(name);
+
+//   return (
+//     <>
+//       <FormControl width="100%">
+//         <FormLabel
+//           fontSize="16px"
+//           lineHeight="22px"
+//           fontWeight="400"
+//           color={labelColor || "var(--brand-primary)"}>
+//           {label}
+//         </FormLabel>
+
+//         <Textarea
+//           autoComplete="true"
+//           fontSize="sm"
+//           placeholder={placeholder}
+//           borderRadius={radius ? radius : "8px"}
+//           border={`1px solid ${borderColor || "var(--neutral-200)"}`}
+//           className={meta.touched && meta.error ? "shake" : ""}
+//           _placeholder={{
+//             fontWeight: "400",
+//             color: "var(--input-placeholder)",
+//             fontSize: "16px",
+//             lineHeight: "22px",
+//           }}
+//           height={height || "200px"}
+//           {...props}
+//           {...field}
+//         />
+
+//         {meta.touched && meta.error ? (
+//           <Text color="var(--deep-blood)" fontSize="sm" pt=".3em">
+//             {meta.error}
+//           </Text>
+//         ) : null}
+//       </FormControl>
+//     </>
+//   );
+// };
+
+// type CustomSwitchProps = FormControlProps & {
+//   name: string;
+//   label?: string;
+//   labelColor?: string;
+//   labelWeight?: string | number;
+//   labelSize?: string | number;
+//   labelPosition?: string;
+//   columns?: { base?: number; lg?: number };
+//   isRequired?: boolean;
+//   size?: string;
+//   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+// };
+
+// export const SwitchField = ({
+//   name,
+//   label,
+//   labelSize,
+//   labelWeight,
+//   labelColor = "var(--brand-primary)",
+//   labelPosition = "left",
+//   isRequired = false,
+//   onChange,
+//   size,
+//   ...props
+// }: CustomSwitchProps) => {
+//   const [field, meta, helpers] = useField(name);
+
+//   const fontSize = typeof labelSize === "number" && `${labelSize}px`;
+
+//   return (
+//     <FormControl as={Flex} maxW="fit-content" {...props}>
+//       {label && labelPosition === "left" && (
+//         <FormLabel
+//           htmlFor={name}
+//           color={labelColor}
+//           fontSize={fontSize || "14px"}
+//           fontWeight={labelWeight || "normal"}
+//           mb="0">
+//           {label}
+//           {isRequired && (
+//             <Text as="span" color="red.500" ml="1">
+//               *
+//             </Text>
+//           )}
+//         </FormLabel>
+//       )}
+//       <Switch
+//         id={name}
+//         isChecked={field.value}
+//         size={size || "md"}
+//         onChange={(e) => {
+//           helpers.setValue(e.target.checked);
+//           onChange?.(e);
+//         }}
+//         sx={{
+//           ".chakra-switch__track": {
+//             bg: field.value ? "var(--coral)" : "gray.200",
+//           },
+//         }}
+//       />
+//       {label && labelPosition === "right" && (
+//         <FormLabel
+//           htmlFor={name}
+//           color={labelColor}
+//           fontSize={fontSize || "14px"}
+//           fontWeight={labelWeight || "normal"}
+//           mb="0"
+//           ml="1rem">
+//           {label}
+//           {isRequired && (
+//             <Text as="span" color="red.500" ml="1">
+//               *
+//             </Text>
+//           )}
+//         </FormLabel>
+//       )}
+//       {meta.touched && meta.error ? (
+//         <Text color="red.500" fontSize="sm">
+//           {meta.error}
+//         </Text>
+//       ) : null}
+//     </FormControl>
+//   );
+// };
+
+// type SelectProps = FormControlProps & {
+//   name: string;
+//   label?: string;
+//   labelColor?: string;
+//   options: Array<{ value: string | number; label: string }>;
+//   isRequired?: boolean;
+// };
+
+// export const ChakraSelectField: React.FC<SelectProps> = ({
+//   name,
+//   label,
+//   labelColor = "var(--brand-primary)",
+//   options,
+//   isRequired = false,
+//   ...props
+// }) => {
+//   const [field, meta, helpers] = useField(name);
+
+//   return (
+//     <FormControl {...props}>
+//       {label && (
+//         <FormLabel htmlFor={name} color={labelColor}>
+//           {label}
+//           {isRequired && (
+//             <Text as="span" color="red.500" ml="1">
+//               *
+//             </Text>
+//           )}
+//         </FormLabel>
+//       )}
+//       <Select
+//         id={name}
+//         name={name}
+//         value={field.value}
+//         onChange={(e) => helpers.setValue(e.target.value)}
+//         onBlur={field.onBlur}>
+//         <option value="" disabled>
+//           Select an option
+//         </option>
+//         {options.map((option) => (
+//           <option key={option.value} value={option.value}>
+//             {option.label}
+//           </option>
+//         ))}
+//       </Select>
+//       {meta.touched && meta.error ? (
+//         <Text color="red.500" fontSize="sm">
+//           {meta.error}
+//         </Text>
+//       ) : null}
+//     </FormControl>
+//   );
+// };
+
+// interface CustomCheckboxProps extends CheckboxProps {
+//   label: string;
+//   value?: string;
+//   isChecked?: boolean;
+//   //   onChange?: (isChecked: boolean) => void;
+//   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+//   spacing?: number | string;
+//   checkboxSize?: number | string;
+//   labelProps?: any;
+//   checkboxProps?: any;
+// }
+
+// export const CustomCheckbox = ({
+//   label,
+//   value,
+//   isChecked,
+//   onChange,
+//   spacing = 2,
+//   checkboxSize = 4,
+//   labelProps,
+//   checkboxProps,
+//   ...rest
+// }: CustomCheckboxProps) => {
+//   const { state, getCheckboxProps, getInputProps, getLabelProps } = useCheckbox(
+//     {
+//       value,
+//       isChecked,
+//       onChange,
+//       ...rest,
+//     }
+//   );
+
+//   return (
+//     <chakra.label
+//       display="flex"
+//       flexDirection="row-reverse"
+//       alignItems="center"
+//       gridColumnGap={spacing}
+//       cursor="pointer"
+//       userSelect="none"
+//       justifyContent="space-between"
+//       {...rest}>
+//       <input {...getInputProps()} hidden />
+
+//       {/* Checkbox visual */}
+//       <Flex
+//         alignItems="center"
+//         justifyContent="center"
+//         border="1.5px solid var(--text-1)"
+//         borderRadius="md"
+//         w={checkboxSize}
+//         h={checkboxSize}
+//         transition="all 0.2s"
+//         _hover={{
+//           borderColor: "green.500",
+//         }}
+//         boxSize="24px"
+//         {...getCheckboxProps(checkboxProps)}>
+//         {state.isChecked && <Check size={14} color="var(--text-1)" />}
+//       </Flex>
+
+//       {/* Label text on the left */}
+//       <Text
+//         color={state.isChecked ? "green.700" : "gray.700"}
+//         fontWeight={state.isChecked ? "semibold" : "normal"}
+//         {...getLabelProps(labelProps)}>
+//         {label}
+//       </Text>
+//     </chakra.label>
+//   );
+// };

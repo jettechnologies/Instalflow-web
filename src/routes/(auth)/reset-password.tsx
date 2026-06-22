@@ -219,6 +219,7 @@ function RouteComponent() {
                         {
                           onSuccess: () => {
                             setIsSuccess(true);
+                            localStorageHelper.remove("IFL_USER_EMAIL");
                             setTimeout(() => navigate({ to: "/login" }), 3000);
                           },
                         }

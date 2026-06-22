@@ -121,9 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       if (accessToken) {
-        await apiService.post("/auth/logout").catch(() => {
-          // Best-effort — clear locally even if server call fails
-        });
+        await apiService.post("/auth/logout");
       }
     } finally {
       setAuthToken(null);

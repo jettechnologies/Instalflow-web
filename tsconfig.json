@@ -39,7 +39,8 @@
       "@queries/*": ["src/queries/*"],
       "@store/*": ["src/store/*"],
       "@mutations/*": ["src/mutations/*"],
-      "@services/*": ["src/services/*"]
+      "@services/*": ["src/services/*"],
+      "@theme": ["src/theme"]
     }
   },
   "include": ["src", "style"]
