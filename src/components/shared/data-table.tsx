@@ -128,8 +128,8 @@ export default function DataTable<T>({
   const isInternalPagination = props.isInternalPagination === true;
   const pagination = isInternalPagination ? props.pagination : undefined;
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, _setSorting] = useState<SortingState>([]);
+  const [columnFilters, _setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     defaultVisibility ?? {}
   );

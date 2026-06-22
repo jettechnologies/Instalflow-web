@@ -1,39 +1,17 @@
 import {
-  Avatar,
-  Badge,
   Box,
   Button,
   Flex,
-  HStack,
   Heading,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  SimpleGrid,
-  Spinner,
   Text,
   VStack,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { MarketersTable } from "@components/tables/company/marketers-table";
 import { useUpdateSearchParam } from "@hooks/context/useSearchParams";
 import { usePrefetchQueryData } from "@hooks/prefetch-query-data";
 import { InviteMarketer } from "@layouts/modal-layout/invite-marketer";
-import { FileSearchIcon, UserPlusIcon } from "@phosphor-icons/react";
+import { UserPlusIcon } from "@phosphor-icons/react";
 import { LIMIT } from "@services/api-service";
 import { getAllMarketersQueryOptions } from "@services/tanstack-queries/staff-management";
 import { useQuery } from "@tanstack/react-query";
