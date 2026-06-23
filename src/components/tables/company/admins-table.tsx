@@ -1,9 +1,14 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, Box, Text } from "@chakra-ui/react";
-import type { AdminUserResponse } from "@utils/types/response-type";
+import type {
+  AdminUserResponse,
+  UserActions,
+} from "@utils/types/response-type";
 import DataTable from "@components/shared/data-table";
 import { useNavigate } from "@tanstack/react-router";
 import { formatDate } from "@utils/misc";
+import { AdminActionModal } from "@layouts/modal-layout/admin-action";
+import { useMemo, useState } from "react";
 
 interface AllAdminsTableProps {
   admins: AdminUserResponse[];
@@ -135,41 +140,73 @@ export const AdminsTable = ({
 }: AllAdminsTableProps) => {
   const navigate = useNavigate();
 
+  const [adminActionModal, setAdminActionModal] = useState<{
+    adminId: string;
+    action: UserActions | null;
+  }>({
+    adminId: "",
+    action: null,
+  });
+
+  const selectedAdmin = useMemo(() => {
+    if (adminActionModal.adminId === "") return null;
+    return admins.find((m) => m.userId === adminActionModal.adminId);
+  }, [admins, adminActionModal.adminId]);
+
   return (
-    <DataTable<AdminUserResponse>
-      data={admins}
-      columns={adminsColumn}
-      fetchLoading={isLoading}
-      getRowId={(row) => row.userId}
-      isInternalPagination
-      tableAction={{
-        actions: [
-          {
-            label: "View Details",
-            onClick: (row) =>
-              navigate({
-                to: `/company/admins/${row.original.userId}`,
-              }),
-          },
-          {
-            label: "Toggle Status",
-            onClick: (row) => console.log("toggle status", row.original.userId),
-          },
-          {
-            label: "Delete Admin",
-            onClick: (row) => console.log("Delete Admin", row.original.userId),
-          },
-        ],
-      }}
-      pagination={{
-        currentPage: page,
-        itemsPerPage: limit,
-        pageSize: limit,
-        totalCount,
-        onPageChange,
-        onItemsPerPageChange,
-        onMouseEnter,
-      }}
-    />
+    <>
+      <DataTable<AdminUserResponse>
+        data={admins}
+        columns={adminsColumn}
+        fetchLoading={isLoading}
+        getRowId={(row) => row.userId}
+        isInternalPagination
+        tableAction={{
+          actions: [
+            {
+              label: "View Details",
+              onClick: (row) =>
+                navigate({
+                  to: `/company/admins/${row.original.userId}`,
+                }),
+            },
+            {
+              label: "Toggle Status",
+              onClick: (row) =>
+                setAdminActionModal({
+                  adminId: row.original.userId,
+                  action: "TOGGLE_STATUS",
+                }),
+            },
+            {
+              label: "Delete Admin",
+              onClick: (row) =>
+                setAdminActionModal({
+                  adminId: row.original.userId,
+                  action: "DELETE_ACCOUNT",
+                }),
+            },
+          ],
+        }}
+        pagination={{
+          currentPage: page,
+          itemsPerPage: limit,
+          pageSize: limit,
+          totalCount,
+          onPageChange,
+          onItemsPerPageChange,
+          onMouseEnter,
+        }}
+      />
+
+      <AdminActionModal
+        isOpen={!!adminActionModal.adminId}
+        onClose={() => setAdminActionModal({ adminId: "", action: null })}
+        adminId={adminActionModal.adminId}
+        adminName={selectedAdmin?.name ?? "Admin"}
+        active={selectedAdmin?.active ?? false}
+        action={adminActionModal.action ?? "TOGGLE_STATUS"}
+      />
+    </>
   );
 };

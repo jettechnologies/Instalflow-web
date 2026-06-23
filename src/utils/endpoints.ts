@@ -11,7 +11,7 @@ const staffManagement = {
     softDeleteMarketer: (marketerId: string) =>
       `/company/marketers/${marketerId}`,
     toggleMarketerStatus: (marketerId: string) =>
-      `company/marketers/${marketerId}/toggle-status`,
+      `/company/marketers/${marketerId}/toggle-status`,
     handleApprovalRequest: (requestId: string) =>
       `/company/approvals/${requestId}`,
   },

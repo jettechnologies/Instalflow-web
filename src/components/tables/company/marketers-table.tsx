@@ -1,11 +1,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, Box, Text, Tooltip } from "@chakra-ui/react";
 import { format } from "date-fns";
-import type { MarketerUserResponse } from "@utils/types/response-type";
+import type {
+  MarketerUserResponse,
+  UserActions,
+} from "@utils/types/response-type";
 import DataTable from "@components/shared/data-table";
 import { useAuth } from "@context/auth-provider";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { MarketerActionModal } from "@layouts/modal-layout/marketer-action";
 
 interface AllMarketersTableProps {
   marketers: MarketerUserResponse[];
@@ -123,6 +127,19 @@ export const MarketersTable = ({
 
   const userRole = user?.role;
 
+  const [marketerActionModal, setMarketerActionModal] = useState<{
+    marketId: string;
+    action: UserActions | null;
+  }>({
+    marketId: "",
+    action: null,
+  });
+
+  const selectedMarketer = useMemo(() => {
+    if (!user || marketerActionModal.marketId === "") return null;
+    return marketers.find((m) => m.userId === marketerActionModal.marketId);
+  }, [marketers, marketerActionModal.marketId]);
+
   const marketerActions = useMemo(
     () =>
       userRole === "COMPANY"
@@ -130,12 +147,18 @@ export const MarketersTable = ({
             {
               label: "Toggle Status",
               onClick: (row: any) =>
-                console.log("toggle status", row.original.userId),
+                setMarketerActionModal({
+                  marketId: row.original.userId,
+                  action: "TOGGLE_STATUS",
+                }),
             },
             {
               label: "Delete Marketer",
               onClick: (row: any) =>
-                console.log("Delete Marketer", row.original.userId),
+                setMarketerActionModal({
+                  marketId: row.original.userId,
+                  action: "DELETE_ACCOUNT",
+                }),
             },
           ]
         : userRole === "ADMIN"
@@ -143,12 +166,18 @@ export const MarketersTable = ({
               {
                 label: "Request Toggle Status",
                 onClick: (row: any) =>
-                  console.log("request toggle status", row.original.userId),
+                  setMarketerActionModal({
+                    marketId: row.original.userId,
+                    action: "TOGGLE_STATUS",
+                  }),
               },
               {
                 label: "Request Delete Marketer",
                 onClick: (row: any) =>
-                  console.log("Request Delete Marketer", row.original.userId),
+                  setMarketerActionModal({
+                    marketId: row.original.userId,
+                    action: "DELETE_ACCOUNT",
+                  }),
               },
             ]
           : [],
@@ -156,33 +185,45 @@ export const MarketersTable = ({
   );
 
   return (
-    <DataTable<MarketerUserResponse>
-      data={marketers}
-      columns={marketerColumns}
-      fetchLoading={isLoading}
-      getRowId={(row) => row.userId}
-      isInternalPagination
-      tableAction={{
-        actions: [
-          {
-            label: "View Details",
-            onClick: (row) =>
-              navigate({
-                to: `/company/marketers/${row.original.userId}`,
-              }),
-          },
-          ...marketerActions,
-        ],
-      }}
-      pagination={{
-        currentPage: page,
-        itemsPerPage: limit,
-        pageSize: limit,
-        totalCount,
-        onPageChange,
-        onItemsPerPageChange,
-        onMouseEnter,
-      }}
-    />
+    <>
+      <DataTable<MarketerUserResponse>
+        data={marketers}
+        columns={marketerColumns}
+        fetchLoading={isLoading}
+        getRowId={(row) => row.userId}
+        isInternalPagination
+        tableAction={{
+          actions: [
+            {
+              label: "View Details",
+              onClick: (row) =>
+                navigate({
+                  to: `/company/marketers/${row.original.userId}`,
+                }),
+            },
+            ...marketerActions,
+          ],
+        }}
+        pagination={{
+          currentPage: page,
+          itemsPerPage: limit,
+          pageSize: limit,
+          totalCount,
+          onPageChange,
+          onItemsPerPageChange,
+          onMouseEnter,
+        }}
+      />
+
+      <MarketerActionModal
+        isOpen={!!marketerActionModal.marketId}
+        onClose={() => setMarketerActionModal({ marketId: "", action: null })}
+        marketerId={marketerActionModal.marketId}
+        marketerName={selectedMarketer?.name ?? ""}
+        active={selectedMarketer?.active ?? false}
+        role={(userRole ?? "COMPANY") as any}
+        action={marketerActionModal.action ?? "TOGGLE_STATUS"}
+      />
+    </>
   );
 };

@@ -161,3 +161,20 @@ export interface DetailedMarketerResponse {
   recentCustomers: RecentCustomer[];
   recentPayoutRequests: RecentPayoutRequest[];
 }
+
+export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface MarketerStatusResponse {
+  requestId: string;
+  action: "TOGGLE_ACTIVE" | "SOFT_DELETE";
+  status: ApprovalStatus;
+  createdAt: string;
+}
+export interface AdminStatusResponse {
+  userId: string;
+  name: string;
+  active: boolean;
+  email: string;
+}
+
+export type UserActions = "TOGGLE_STATUS" | "DELETE_ACCOUNT";

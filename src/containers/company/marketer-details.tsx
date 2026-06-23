@@ -17,6 +17,7 @@ import type {
   DetailedMarketerResponse,
   RecentCustomer,
   RecentPayoutRequest,
+  UserActions,
 } from "@utils/types/response-type";
 import {
   Users,
@@ -32,7 +33,7 @@ import {
   Trash2,
   ClipboardCheck,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { tokens } from "@theme";
 import {
   CopyChip,
@@ -44,6 +45,7 @@ import {
 } from "@components/company/marketers/marketers-details";
 import { useAuth } from "@context/auth-provider";
 import { formatCurrency, formatDate } from "@utils/misc";
+import { MarketerActionModal } from "@layouts/modal-layout/marketer-action";
 
 interface MarketerDetailProps {
   marketerId: string;
@@ -106,6 +108,14 @@ export const MarketerDetail = ({ marketerId }: MarketerDetailProps) => {
     select: (data) => data.data,
   });
 
+  const [marketerActionModal, setMarketerActionModal] = useState<{
+    marketId: string;
+    action: UserActions | null;
+  }>({
+    marketId: "",
+    action: null,
+  });
+
   const { user } = useAuth();
 
   const userRole = user?.role;
@@ -116,13 +126,21 @@ export const MarketerDetail = ({ marketerId }: MarketerDetailProps) => {
         ? [
             {
               label: m.active ? "Deactivate Marketer" : "Activate Marketer",
-              onClick: () => console.log("toggle status", marketerId),
+              onClick: () =>
+                setMarketerActionModal({
+                  marketId: marketerId,
+                  action: "TOGGLE_STATUS",
+                }),
               icon: ToggleLeft,
               colorScheme: m.active ? "red" : "green",
             },
             {
               label: "Delete Marketer",
-              onClick: () => console.log("Delete Marketer", marketerId),
+              onClick: () =>
+                setMarketerActionModal({
+                  marketId: marketerId,
+                  action: "DELETE_ACCOUNT",
+                }),
               icon: Trash2,
               colorScheme: "red",
             },
@@ -131,14 +149,21 @@ export const MarketerDetail = ({ marketerId }: MarketerDetailProps) => {
           ? [
               {
                 label: "Request Toggle Status",
-                onClick: () => console.log("request toggle status", marketerId),
+                onClick: () =>
+                  setMarketerActionModal({
+                    marketId: marketerId,
+                    action: "TOGGLE_STATUS",
+                  }),
                 icon: ClipboardCheck,
                 colorScheme: "yellow",
               },
               {
                 label: "Request Delete Marketer",
                 onClick: () =>
-                  console.log("Request Delete Marketer", marketerId),
+                  setMarketerActionModal({
+                    marketId: marketerId,
+                    action: "DELETE_ACCOUNT",
+                  }),
                 icon: ClipboardCheck,
                 colorScheme: "yellow",
               },
@@ -500,6 +525,16 @@ export const MarketerDetail = ({ marketerId }: MarketerDetailProps) => {
             </Box>
           )}
         </MarketerDetailsSection>
+
+        <MarketerActionModal
+          isOpen={!!marketerActionModal.marketId}
+          onClose={() => setMarketerActionModal({ marketId: "", action: null })}
+          marketerId={marketerActionModal.marketId}
+          marketerName={m.name}
+          active={m.active}
+          role={(userRole ?? "COMPANY") as any}
+          action={marketerActionModal.action ?? "TOGGLE_STATUS"}
+        />
       </Box>
     </Box>
   );

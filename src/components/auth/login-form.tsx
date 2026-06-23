@@ -11,6 +11,7 @@ import { useAuth } from "@context/auth-provider";
 import { useNavigate } from "@tanstack/react-router";
 import { useToastContext } from "@hooks/context";
 import type { UserRole } from "@utils/types";
+import { useCallback } from "react";
 
 interface LoginFormProps {
   onRegisterClick: () => void;
@@ -23,39 +24,68 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
   const { openToast } = useToastContext();
   const navigate = useNavigate();
 
-  const handleRoleBasedRedirect = (userRoles: UserRole) => {
-    switch (userRoles) {
-      case "COMPANY":
-        navigate({
-          to: redirect || "/company/overview",
-        });
-        return;
-      case "ADMIN":
-        navigate({
-          to: redirect || "/company/overview",
-        });
-        return;
-      case "MARKETER":
-        navigate({
-          to: redirect || "/marketer/overview",
-        });
-        return;
-      case "CUSTOMER":
-        navigate({
-          to: redirect || "/customer/overview",
-        });
+  // const handleRoleBasedRedirect = (userRoles: UserRole) => {
+  //   switch (userRoles) {
+  //     case "COMPANY":
+  //       navigate({
+  //         to: redirect || "/company/overview",
+  //       });
+  //       return;
+  //     case "ADMIN":
+  //       navigate({
+  //         to: redirect || "/company/overview",
+  //       });
+  //       return;
+  //     case "MARKETER":
+  //       navigate({
+  //         to: redirect || "/marketer/overview",
+  //       });
+  //       return;
+  //     case "CUSTOMER":
+  //       navigate({
+  //         to: redirect || "/customer/overview",
+  //       });
 
-        return;
+  //       return;
 
-      default:
-        navigate({
-          to: "/login",
-          search: {
-            redirect,
-          },
-        });
-    }
-  };
+  //     default:
+  //       navigate({
+  //         to: "/login",
+  //         search: {
+  //           redirect,
+  //         },
+  //       });
+  //   }
+  // };
+
+  const handleRoleBasedRedirect = useCallback(
+    (userRole: UserRole) => {
+      const defaultRoutes: Record<UserRole, string> = {
+        COMPANY: "/company/overview",
+        ADMIN: "/company/overview",
+        MARKETER: "/marketer/overview",
+        CUSTOMER: "/customer/overview",
+      };
+
+      const canAccessRedirect =
+        !!redirect &&
+        (userRole === "COMPANY" || userRole === "ADMIN"
+          ? redirect.startsWith("/company")
+          : userRole === "MARKETER"
+            ? redirect.startsWith("/marketer")
+            : redirect.startsWith("/customer"));
+
+      if (canAccessRedirect) {
+        window.location.replace(redirect);
+        return;
+      }
+
+      navigate({
+        to: defaultRoutes[userRole],
+      });
+    },
+    [redirect]
+  );
 
   return (
     <Formik

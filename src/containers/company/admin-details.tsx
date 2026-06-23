@@ -16,6 +16,7 @@ import {
   Icon,
   Text,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import {
   Users,
@@ -30,7 +31,10 @@ import {
 } from "lucide-react";
 import { tokens } from "@theme";
 import { formatCurrency, formatDate } from "@utils/misc";
-import type { DetailedAdminResponse } from "@utils/types/response-type";
+import type {
+  DetailedAdminResponse,
+  UserActions,
+} from "@utils/types/response-type";
 import { MarketerDetailsStatCard } from "@components/company/marketers/marketers-details";
 import type { OverviewSearchType } from "@utils/schema";
 import { usePrefetchQueryData } from "@hooks/prefetch-query-data";
@@ -38,6 +42,7 @@ import { MarketersTable } from "@components/tables/company/marketers-table";
 import { LIMIT } from "@services/api-service";
 import { useUpdateSearchParam } from "@hooks/context/useSearchParams";
 import { useState } from "react";
+import { AdminActionModal } from "@layouts/modal-layout/admin-action";
 
 interface AdminDetailsProps {
   adminId: string;
@@ -97,9 +102,12 @@ const getStats = (admin: DetailedAdminResponse) => [
 
 export const AdminDetails = ({ adminId, params }: AdminDetailsProps) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [_, setAction] = useState<"TOGGLE_STATUS" | "DELETE_ADMIN" | null>(
-    null
-  );
+  const [action, setAction] = useState<UserActions | null>(null);
+  const {
+    isOpen: modalIsOpen,
+    onClose: modalOnClose,
+    onOpen: modalOnOpen,
+  } = useDisclosure();
 
   const onToggle = () => setIsOpen((prev) => !prev);
 
@@ -250,8 +258,11 @@ export const AdminDetails = ({ adminId, params }: AdminDetailsProps) => {
                     ? "rgba(239,68,68,0.6)"
                     : "rgba(16,185,129,0.6)",
                 }}
-                onClick={() => setAction("TOGGLE_STATUS")}>
-                {admin.active ? "Deactivate" : "Activate"}
+                onClick={() => {
+                  setAction("TOGGLE_STATUS");
+                  modalOnOpen();
+                }}>
+                {admin.active ? "Deactivate Admin" : "Activate Admin"}
               </Button>
               <Button
                 size="sm"
@@ -264,7 +275,10 @@ export const AdminDetails = ({ adminId, params }: AdminDetailsProps) => {
                   bg: "rgba(239,68,68,0.12)",
                   borderColor: "rgba(239,68,68,0.6)",
                 }}
-                onClick={() => setAction("DELETE_ADMIN")}>
+                onClick={() => {
+                  setAction("DELETE_ACCOUNT");
+                  modalOnOpen();
+                }}>
                 Delete Admin
               </Button>
             </HStack>
@@ -415,6 +429,14 @@ export const AdminDetails = ({ adminId, params }: AdminDetailsProps) => {
           </Collapse>
         </Box>
       </Box>
+      <AdminActionModal
+        isOpen={modalIsOpen}
+        onClose={modalOnClose}
+        adminId={adminId}
+        adminName={admin.name}
+        active={admin.active}
+        action={action ?? "TOGGLE_STATUS"}
+      />
     </Box>
   );
 };
