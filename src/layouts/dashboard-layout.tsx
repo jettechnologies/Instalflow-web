@@ -16,6 +16,7 @@ import {
   DrawerBody,
   DrawerCloseButton,
   useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 import {
   Link as RouterLink,
@@ -33,11 +34,13 @@ import {
   Link2,
   FileCheck,
   Menu as MenuIcon,
+  MoveLeft,
 } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { NotificationBell } from "@components/shared/notification-bell";
 import { LightningIcon } from "@phosphor-icons/react";
 import { useAuth } from "@context/auth-provider";
+import type { FileRouteTypes } from "src/routeTree.gen";
 import type { UserRole } from "@utils/types";
 
 interface NavItem {
@@ -128,6 +131,17 @@ export function DashboardLayout({
   const { pathname } = useLocation();
   const drawer = useDisclosure();
   const navigate = useNavigate();
+
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
+  const currentPathName = pathSegments[pathSegments.length - 1] ?? "";
+  // const parentPathName = pathSegments[1];
+  const buildUrl = (index: number) => {
+    const segments = pathSegments.slice(0, index + 1);
+    return `/${segments.join("/")}`;
+  };
+
+  const backLink = pathSegments.length > 2 ? buildUrl(1) : null;
 
   useEffect(() => {
     drawer.onClose();
@@ -232,13 +246,39 @@ export function DashboardLayout({
               display={{ base: "inline-flex", lg: "none" }}
               onClick={drawer.onOpen}
             />
+
+            {backLink && (
+              <Button
+                variant="link"
+                onClick={() =>
+                  navigate({
+                    to: backLink as FileRouteTypes["to"],
+                  })
+                }>
+                <MoveLeft size={18} color="var(--text-secondary)" />
+              </Button>
+            )}
+
             <Text
-              fontSize={{ base: "16px", md: "20px" }}
-              fontWeight={700}
-              color="textPrimary"
-              noOfLines={1}>
-              {title}
+              fontFamily="var(--fakt)"
+              fontWeight="500"
+              fontSize="24px"
+              color="var(--pinch-black)"
+              textTransform="capitalize">
+              {currentPathName.includes("overview")
+                ? `Welcome, ${user?.name || ""}`
+                : currentPathName.replaceAll("-", " ")}
             </Text>
+
+            {title && (
+              <Text
+                fontSize={{ base: "16px", md: "20px" }}
+                fontWeight={700}
+                color="textPrimary"
+                noOfLines={1}>
+                {title}
+              </Text>
+            )}
           </HStack>
           <HStack spacing={{ base: 2, md: 3 }}>
             <NotificationBell />

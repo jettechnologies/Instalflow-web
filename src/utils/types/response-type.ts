@@ -1,4 +1,10 @@
 import type { UserRole } from "./auth";
+import { APPROVAL_STATUS } from "../misc";
+
+export type ApprovalAction = "TOGGLE_ACTIVE" | "DELETE_ACCOUNT";
+export type UserActions = "TOGGLE_STATUS" | "DELETE_ACCOUNT";
+export type ApprovalStatus = (typeof APPROVAL_STATUS)[number];
+export type ReviewAction = Exclude<ApprovalStatus, "PENDING">;
 
 type InviteMarketerType = {
   userId: string;
@@ -162,8 +168,6 @@ export interface DetailedMarketerResponse {
   recentPayoutRequests: RecentPayoutRequest[];
 }
 
-export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
-
 export interface MarketerStatusResponse {
   requestId: string;
   action: "TOGGLE_ACTIVE" | "SOFT_DELETE";
@@ -177,4 +181,31 @@ export interface AdminStatusResponse {
   email: string;
 }
 
-export type UserActions = "TOGGLE_STATUS" | "DELETE_ACCOUNT";
+export interface ApprovalRequestUser {
+  userId: string;
+  name: string;
+  email: string;
+}
+
+export interface ApprovalTargetUser {
+  userId: string;
+  name: string;
+  email: string;
+  active: boolean;
+}
+
+export interface ApprovalRequest {
+  requestId: string;
+  companyId: string;
+  requestedById: string;
+  targetUserId: string;
+  action: ApprovalAction;
+  status: ApprovalStatus;
+  createdAt: string;
+  updatedAt: string;
+  reason?: string;
+  reviewReason?: string;
+  reviewedAt?: string;
+  requestedBy: ApprovalRequestUser;
+  targetUser: ApprovalTargetUser;
+}

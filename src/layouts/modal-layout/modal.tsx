@@ -77,6 +77,7 @@ export const ModalLayout = ({
       onClose={onClose}
       isCentered
       closeOnOverlayClick={autoClose}
+      closeOnEsc={autoClose}
       size={size}>
       <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(12px)" />
 
@@ -86,7 +87,7 @@ export const ModalLayout = ({
         borderColor="borderStructural"
         borderRadius={noRadius ? "none" : radius || "2xl"}
         px={px || 6}
-        py={noCloseButton ? 0 : py || 4}
+        py={py ?? (noCloseButton ? 0 : 4)}
         color="textPrimary"
         overflow="hidden">
         {(title || modalItems?.length) && (

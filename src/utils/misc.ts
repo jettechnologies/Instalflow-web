@@ -44,5 +44,15 @@ export const formatDate = (
   return isValid(parsedDate) ? format(parsedDate, DATE_FORMATS[type]) : "-";
 };
 
+export const slugify = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
 export const USER_COOKIE_KEY = "ifl_user";
 export const TOKEN_COOKIE_KEY = "ifl_access_token";
+export const APPROVAL_STATUS = ["PENDING", "APPROVED", "REJECTED"] as const;

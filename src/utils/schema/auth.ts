@@ -72,3 +72,12 @@ export const ResetPasswordSchema = Yup.object({
 });
 
 export type ResetPasswordSchemaType = Yup.InferType<typeof ResetPasswordSchema>;
+
+export const ForcePasswordSchema = Yup.object({
+  newPassword: PasswordSchema,
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword")], "Passwords do not match.")
+    .required("Please confirm your new password."),
+});
+
+export type ForcePasswordSchemaType = Yup.InferType<typeof ForcePasswordSchema>;

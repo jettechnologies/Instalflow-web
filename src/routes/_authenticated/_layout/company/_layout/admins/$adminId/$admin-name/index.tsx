@@ -1,13 +1,13 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { AdminDetails } from "@containers/company";
 import {
   getAdminDetailQueryOptions,
   getMarketersCreatedByAdminQueryOptions,
 } from "@services/tanstack-queries/staff-management";
-import { createFileRoute } from "@tanstack/react-router";
 import { OverviewSearch } from "@utils/schema";
 
 export const Route = createFileRoute(
-  "/_authenticated/_layout/company/_layout/admins/$adminId"
+  "/_authenticated/_layout/company/_layout/admins/$adminId/$admin-name/"
 )({
   validateSearch: (search) =>
     OverviewSearch.validateSync(search, {

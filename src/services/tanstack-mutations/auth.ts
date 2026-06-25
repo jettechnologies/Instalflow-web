@@ -1,5 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { forgotPassword, resetPassword } from "@services/mutations/auth";
+import {
+  forcePasswordChange,
+  forgotPassword,
+  resetPassword,
+} from "@services/mutations/auth";
 import { useToastContext } from "@hooks/context";
 import { localStorageHelper } from "@utils/helpers";
 
@@ -40,6 +44,20 @@ export const useResetPassword = () => {
     mutationFn: resetPassword,
     meta: {
       errorMessage: "Failed to reset password",
+    },
+  });
+};
+
+export const useForcePasswordChange = () => {
+  const { openToast } = useToastContext();
+  return useMutation({
+    mutationFn: forcePasswordChange,
+    meta: {
+      errorMessage: "Failed to force reset password",
+    },
+    onSuccess: (data) => {
+      const message = data.message || "Force Password Change Successful";
+      openToast(message, "success");
     },
   });
 };

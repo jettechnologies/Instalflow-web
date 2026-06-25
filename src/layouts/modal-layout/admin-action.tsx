@@ -76,25 +76,65 @@ export const AdminActionModal = ({
       title={config.title}>
       <VStack spacing={6} align="stretch">
         <VStack spacing={3}>
-          <Icon
-            as={config.icon}
-            boxSize={10}
-            color={
-              action === "DELETE_ACCOUNT"
-                ? "statusDanger"
-                : active
-                  ? "statusWarning"
-                  : "statusSuccess"
-            }
-          />
+          <Icon as={config.icon} boxSize={12} color="brand.500" />
+
           <Heading size="md" textAlign="center">
             {config.title}
           </Heading>
-          <Text textAlign="center" color="textSecondary" fontSize="sm">
+
+          <Text
+            textAlign="center"
+            color="textSecondary"
+            fontSize="sm"
+            maxW="420px">
             {config.description}
           </Text>
         </VStack>
-        <HStack>
+
+        <VStack
+          align="stretch"
+          spacing={4}
+          p={4}
+          bg="bgLayer1"
+          border="1px solid"
+          borderColor="borderStructural"
+          borderRadius="xl">
+          <HStack justify="space-between">
+            <Text
+              fontSize="xs"
+              textTransform="uppercase"
+              letterSpacing="0.08em"
+              color="textMuted"
+              fontWeight="600">
+              Marketer
+            </Text>
+
+            <Text fontSize="sm" fontWeight="600">
+              {adminName}
+            </Text>
+          </HStack>
+
+          <HStack justify="space-between">
+            <Text
+              fontSize="xs"
+              textTransform="uppercase"
+              letterSpacing="0.08em"
+              color="textMuted"
+              fontWeight="600">
+              Action
+            </Text>
+
+            <Text fontSize="sm" fontWeight="600" color="brand.400">
+              {action === "TOGGLE_STATUS"
+                ? active
+                  ? "Suspend Account"
+                  : "Activate Account"
+                : "Delete Account"}
+            </Text>
+          </HStack>
+        </VStack>
+
+        <HStack spacing={3}>
           <Button flex={1} variant="ghostOutline" onClick={onClose}>
             Cancel
           </Button>

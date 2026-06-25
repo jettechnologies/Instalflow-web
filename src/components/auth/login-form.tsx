@@ -24,42 +24,8 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
   const { openToast } = useToastContext();
   const navigate = useNavigate();
 
-  // const handleRoleBasedRedirect = (userRoles: UserRole) => {
-  //   switch (userRoles) {
-  //     case "COMPANY":
-  //       navigate({
-  //         to: redirect || "/company/overview",
-  //       });
-  //       return;
-  //     case "ADMIN":
-  //       navigate({
-  //         to: redirect || "/company/overview",
-  //       });
-  //       return;
-  //     case "MARKETER":
-  //       navigate({
-  //         to: redirect || "/marketer/overview",
-  //       });
-  //       return;
-  //     case "CUSTOMER":
-  //       navigate({
-  //         to: redirect || "/customer/overview",
-  //       });
-
-  //       return;
-
-  //     default:
-  //       navigate({
-  //         to: "/login",
-  //         search: {
-  //           redirect,
-  //         },
-  //       });
-  //   }
-  // };
-
   const handleRoleBasedRedirect = useCallback(
-    (userRole: UserRole) => {
+    (userRole: UserRole, forcePasswordChange: boolean = false) => {
       const defaultRoutes: Record<UserRole, string> = {
         COMPANY: "/company/overview",
         ADMIN: "/company/overview",
@@ -75,6 +41,17 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
             ? redirect.startsWith("/marketer")
             : redirect.startsWith("/customer"));
 
+      if (forcePasswordChange) {
+        navigate({
+          to: defaultRoutes[userRole],
+          search: {
+            forceChangePassword: true,
+          },
+        });
+
+        return;
+      }
+
       if (canAccessRedirect) {
         window.location.replace(redirect);
         return;
@@ -84,8 +61,54 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
         to: defaultRoutes[userRole],
       });
     },
-    [redirect]
+    [redirect, navigate]
   );
+
+  // const handleRoleBasedRedirect = useCallback(
+  //   (userRole: UserRole, forcePasswordChange: boolean = false) => {
+  //     const defaultRoutes: Record<UserRole, string> = {
+  //       COMPANY: "/company/overview",
+  //       ADMIN: "/company/overview",
+  //       MARKETER: "/marketer/overview",
+  //       CUSTOMER: "/customer/overview",
+  //     };
+
+  //     const decodedRedirect = redirect
+  //       ? decodeURIComponent(redirect)
+  //       : undefined;
+
+  //     const canAccessRedirect =
+  //       !!decodedRedirect &&
+  //       ((["COMPANY", "ADMIN"].includes(userRole) &&
+  //         decodedRedirect.startsWith("/company")) ||
+  //         (userRole === "MARKETER" &&
+  //           decodedRedirect.startsWith("/marketer")) ||
+  //         (userRole === "CUSTOMER" && decodedRedirect.startsWith("/customer")));
+
+  //     if (forcePasswordChange) {
+  //       navigate({
+  //         to: defaultRoutes[userRole],
+  //         search: {
+  //           forceChangePassword: true,
+  //         },
+  //       });
+
+  //       return;
+  //     }
+
+  //     if (canAccessRedirect) {
+  //       navigate({
+  //         to: decodedRedirect as any,
+  //       });
+
+  //       return;
+  //     }
+  //     navigate({
+  //       to: defaultRoutes[userRole],
+  //     });
+  //   },
+  //   [navigate, redirect]
+  // );
 
   return (
     <Formik
@@ -94,7 +117,7 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const { profile } = await login(values.email, values.password);
-          handleRoleBasedRedirect(profile.role);
+          handleRoleBasedRedirect(profile.role, profile.forcePasswordChange!);
         } catch (error) {
           const errorMessage =
             error instanceof Error

@@ -22,22 +22,40 @@ export const createAdmin = (data: { name: string; email: string }) => {
   );
 };
 
-export const requestToggleMarketerStatus = (marketerId: string) => {
+interface CreateMarketerRequestParams {
+  marketerId: string;
+  reason?: string;
+}
+
+export const requestToggleMarketerStatus = ({
+  marketerId,
+  reason,
+}: CreateMarketerRequestParams) => {
   return apiService.post<MarketerStatusResponse>(
-    ENDPOINTS.staffManagement.marketer.requestMarketerStatusToggle(marketerId)
+    ENDPOINTS.staffManagement.marketer.requestMarketerStatusToggle(marketerId),
+    {
+      reason,
+    }
   );
 };
 
-export const requestDeleteMarketerAccount = (marketerId: string) => {
+export const requestDeleteMarketerAccount = ({
+  marketerId,
+  reason,
+}: CreateMarketerRequestParams) => {
   return apiService.post<MarketerStatusResponse>(
-    ENDPOINTS.staffManagement.marketer.requestMarketerDelete(marketerId)
+    ENDPOINTS.staffManagement.marketer.requestMarketerDelete(marketerId),
+    {
+      reason,
+    }
   );
 };
 
 interface HandleApprovalRequestParams {
   requestId: string;
   data: {
-    action: Omit<ApprovalStatus, "PENDING">;
+    status: Omit<ApprovalStatus, "PENDING">;
+    reviewReason?: string;
   };
 }
 

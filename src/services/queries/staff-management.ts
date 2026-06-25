@@ -7,6 +7,8 @@ import {
 import { ENDPOINTS } from "@utils/endpoints";
 import type {
   AdminUserResponse,
+  ApprovalRequest,
+  ApprovalStatus,
   DetailedAdminResponse,
   DetailedMarketerResponse,
   MarketerUserResponse,
@@ -48,6 +50,28 @@ export const getMarketersCreatedByAdmin = (
 ) => {
   return apiService.get<PaginatedData<"marketers", MarketerUserResponse>>(
     ENDPOINTS.staffManagement.admin.getAdminsMarketers(adminId),
+    params
+  );
+};
+
+export const getPendingApprovals = (
+  params: Partial<UrlParams> = { limit: LIMIT, sortOrder: "desc" }
+) => {
+  return apiService.get<PaginatedData<"requests", ApprovalRequest>>(
+    ENDPOINTS.staffManagement.marketer.getPendingApprovals,
+    params
+  );
+};
+
+export interface ApprovalParams extends UrlParams {
+  status?: ApprovalStatus;
+}
+
+export const getAllApprovals = (
+  params: Partial<ApprovalParams> = { limit: LIMIT, sortOrder: "desc" }
+) => {
+  return apiService.get<PaginatedData<"requests", ApprovalRequest>>(
+    ENDPOINTS.staffManagement.marketer.getAllApprovals,
     params
   );
 };

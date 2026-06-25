@@ -2,7 +2,8 @@ const staffManagement = {
   marketer: {
     inviteMarketer: "/auth/marketers",
     getAllMarketers: "/admin/marketers",
-    getPendingApprovals: "/company/approvals",
+    getAllApprovals: "/company/approvals",
+    getPendingApprovals: "/company/pending-approvals",
     getSingleMarketer: (marketerId: string) => `/admin/marketers/${marketerId}`,
     requestMarketerStatusToggle: (marketerId: string) =>
       `/admin/marketers/${marketerId}/request-toggle`,

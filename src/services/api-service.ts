@@ -142,7 +142,10 @@ const extractErrorMessage = async (
 
     message = data?.message ?? fallback;
 
-    if (response.status === 401) {
+    if (
+      response.status === 401 &&
+      message === "Session has been revoked or expired. Please login again."
+    ) {
       await handleUnauthorized();
 
       throw new Error(

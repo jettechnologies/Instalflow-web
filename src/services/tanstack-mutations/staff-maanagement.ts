@@ -46,7 +46,9 @@ export const useHandleApprovalRequest = () => {
   return useMutation({
     mutationFn: handleApprovalRequest,
     meta: {
-      invalidatesQuery: QUERY_KEYS.admin_management.base(),
+      invalidatesQuery:
+        (QUERY_KEYS.admin_management.base(),
+        QUERY_KEYS.marketer_management.base()),
     },
     onSuccess: (data) => {
       const message = data.message || "Approval Request Handled Successfully";

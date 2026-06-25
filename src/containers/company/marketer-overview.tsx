@@ -2,12 +2,14 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   Heading,
   Text,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { MarketersTable } from "@components/tables/company/marketers-table";
+import { useAuth } from "@context/auth-provider";
 import { useUpdateSearchParam } from "@hooks/context/useSearchParams";
 import { usePrefetchQueryData } from "@hooks/prefetch-query-data";
 import { InviteMarketer } from "@layouts/modal-layout/invite-marketer";
@@ -15,7 +17,10 @@ import { UserPlusIcon } from "@phosphor-icons/react";
 import { LIMIT } from "@services/api-service";
 import { getAllMarketersQueryOptions } from "@services/tanstack-queries/staff-management";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import type { OverviewSearchType } from "@utils/schema";
+import type { UserRole } from "@utils/types";
+import { FileText } from "lucide-react";
 
 interface MarketerOverviewProps {
   search: OverviewSearchType;
@@ -23,8 +28,11 @@ interface MarketerOverviewProps {
 
 export const MarketerOverview = ({ search }: MarketerOverviewProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { user } = useAuth();
+  const userRole = user?.role as UserRole;
   const updateSearchParam = useUpdateSearchParam<OverviewSearchType>();
+
+  const navigate = useNavigate();
 
   const { data: marketersResponse, isLoading } = useQuery({
     ...getAllMarketersQueryOptions(search),
@@ -59,9 +67,27 @@ export const MarketerOverview = ({ search }: MarketerOverviewProps) => {
               Invite field agents, configure commissions, and manage access.
             </Text>
           </Box>
-          <Button leftIcon={<UserPlusIcon size={16} />} onClick={onOpen}>
-            Invite marketer
-          </Button>
+
+          <HStack spacing={4}>
+            {userRole === "COMPANY" && (
+              <Button
+                leftIcon={<FileText size={16} />}
+                onClick={() => {
+                  navigate({
+                    to: "/company/approvals",
+                    search: {
+                      status: "PENDING",
+                    },
+                  });
+                }}>
+                Pending Approvals
+              </Button>
+            )}
+
+            <Button leftIcon={<UserPlusIcon size={16} />} onClick={onOpen}>
+              Invite marketer
+            </Button>
+          </HStack>
         </Flex>
 
         {/* <SimpleGrid columns={{ base: 2, lg: 4 }} spacing={4}>

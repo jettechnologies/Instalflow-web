@@ -6,7 +6,7 @@ import type {
 } from "@utils/types/response-type";
 import DataTable from "@components/shared/data-table";
 import { useNavigate } from "@tanstack/react-router";
-import { formatDate } from "@utils/misc";
+import { formatDate, slugify } from "@utils/misc";
 import { AdminActionModal } from "@layouts/modal-layout/admin-action";
 import { useMemo, useState } from "react";
 
@@ -167,7 +167,7 @@ export const AdminsTable = ({
               label: "View Details",
               onClick: (row) =>
                 navigate({
-                  to: `/company/admins/${row.original.userId}`,
+                  to: `/company/admins/${row.original.userId}/${slugify(row.original.name)}`,
                 }),
             },
             {

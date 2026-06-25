@@ -58,3 +58,10 @@ export const resetPassword = async (data: {
 }): Promise<StandardResponse<void>> => {
   return apiService.post<void>("/auth/reset-password", data);
 };
+
+export const forcePasswordChange = async (data: {
+  newPassword: string;
+  confirmPassword: string;
+}): Promise<StandardResponse<void>> => {
+  return apiService.post<void>("/auth/force-password-change", data);
+};

@@ -4,9 +4,12 @@ import type { UrlParams } from "@services/api-service";
 import {
   getAdminDetails,
   getAllAdmins,
+  getAllApprovals,
   getAllMarketers,
   getMarketerDetails,
   getMarketersCreatedByAdmin,
+  getPendingApprovals,
+  type ApprovalParams,
 } from "@services/queries/staff-management";
 
 export const getAllAdminsQueryOptions = (params: Partial<UrlParams>) =>
@@ -48,4 +51,19 @@ export const getMarketersCreatedByAdminQueryOptions = ({
       params
     ),
     queryFn: () => getMarketersCreatedByAdmin(adminId, params),
+  });
+
+export const getAllApprovalsQueryOptions = (params: Partial<ApprovalParams>) =>
+  queryOptions({
+    queryKey: QUERY_KEYS.marketer_management.approval_requests(params),
+    queryFn: () => getAllApprovals(params),
+  });
+
+export const getPendingApprovalsQueryOptions = (params: Partial<UrlParams>) =>
+  queryOptions({
+    queryKey: QUERY_KEYS.marketer_management.approval_requests({
+      status: "PENDING",
+      ...params,
+    }),
+    queryFn: () => getPendingApprovals(params),
   });

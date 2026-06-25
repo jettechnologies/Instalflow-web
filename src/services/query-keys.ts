@@ -1,4 +1,5 @@
 import type { UrlParams } from "./api-service";
+import type { ApprovalParams } from "./queries/staff-management";
 
 export const QUERY_KEYS = {
   admin_management: {
@@ -31,6 +32,11 @@ export const QUERY_KEYS = {
       ...QUERY_KEYS.marketer_management.base(),
       "details",
       adminId,
+    ],
+    approval_requests: (params: Partial<ApprovalParams>) => [
+      ...QUERY_KEYS.marketer_management.base(),
+      "approval_requests",
+      params,
     ],
   },
   products: {

@@ -10,6 +10,7 @@ import { useAuth } from "@context/auth-provider";
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { MarketerActionModal } from "@layouts/modal-layout/marketer-action";
+import { slugify } from "@utils/misc";
 
 interface AllMarketersTableProps {
   marketers: MarketerUserResponse[];
@@ -198,7 +199,7 @@ export const MarketersTable = ({
               label: "View Details",
               onClick: (row) =>
                 navigate({
-                  to: `/company/marketers/${row.original.userId}`,
+                  to: `/company/marketers/${row.original.userId}/${slugify(row.original.name)}`,
                 }),
             },
             ...marketerActions,

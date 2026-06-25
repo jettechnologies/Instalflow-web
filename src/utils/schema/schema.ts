@@ -22,3 +22,21 @@ export const OverviewSearch = Yup.object({
 });
 
 export type OverviewSearchType = Yup.InferType<typeof OverviewSearch>;
+
+export const requestReasonSchema = Yup.object({
+  reason: Yup.string().trim().optional(),
+});
+
+export type RequestReasonValues = Yup.InferType<typeof requestReasonSchema>;
+
+export const reviewSchema = Yup.object({
+  reviewReason: Yup.string()
+    .trim()
+    .when("$isRejection", {
+      is: true,
+      then: (s) => s.optional(),
+      otherwise: (s) => s.strip(),
+    }),
+});
+
+export type ReviewSchemaType = Yup.InferType<typeof reviewSchema>;
