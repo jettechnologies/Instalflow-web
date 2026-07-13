@@ -41,8 +41,32 @@ export const QUERY_KEYS = {
   },
   products: {
     base: () => ["products"],
-    all: (page?: number) => [...QUERY_KEYS.products.base(), "all", page],
+    all: (params?: any) => [...QUERY_KEYS.products.base(), "all", params],
     single: (id: string) => [...QUERY_KEYS.products.base(), "single", id],
+    details: (productId: string) => [
+      ...QUERY_KEYS.products.base(),
+      "details",
+      productId,
+    ],
+    gallery: (productId: string) => [
+      ...QUERY_KEYS.products.base(),
+      "gallery",
+      productId,
+    ],
+    installmentPlans: (productId: string) => [
+      ...QUERY_KEYS.products.base(),
+      "installment-plans",
+      productId,
+    ],
+  },
+  categories: {
+    base: () => ["categories"],
+    all: () => [...QUERY_KEYS.categories.base(), "all"],
+    details: (categoryId: string) => [
+      ...QUERY_KEYS.categories.base(),
+      "details",
+      categoryId,
+    ],
   },
   installments: {
     base: () => ["installments"],

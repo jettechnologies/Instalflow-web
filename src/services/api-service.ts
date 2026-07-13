@@ -263,6 +263,35 @@ export const apiService = {
     return data;
   },
 
+  put: async <T>(
+    url: string,
+    body?: any,
+    config?: { headers?: Record<string, string> }
+  ): Promise<StandardResponse<T>> => {
+    const isFormData = body instanceof FormData;
+    const mutationHeaders = await buildMutationHeaders();
+    if (isFormData) delete mutationHeaders["Content-Type"];
+
+    const finalHeaders = { ...mutationHeaders, ...(config?.headers ?? {}) };
+
+    const response = await fetch(`${BASE_URL}${url}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: finalHeaders,
+      body: isFormData ? body : JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      await extractErrorMessage(
+        response,
+        `PUT ${url} failed: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
   delete: async <T>(
     url: string,
     config?: { headers?: Record<string, string> }

@@ -23,6 +23,17 @@ export const OverviewSearch = Yup.object({
 
 export type OverviewSearchType = Yup.InferType<typeof OverviewSearch>;
 
+export const ProductsSearch = Yup.object({
+  page: Yup.string().optional(),
+  limit: Yup.string().optional(),
+  sortOrder: Yup.string().oneOf(["desc", "asc"]).optional(),
+  category: Yup.string().optional(),
+  status: Yup.string().oneOf(["DRAFT", "PUBLISHED", "SOLD_OUT", "ARCHIVED"]).optional(),
+  search: Yup.string().optional(),
+});
+
+export type ProductsSearchType = Yup.InferType<typeof ProductsSearch>;
+
 export const requestReasonSchema = Yup.object({
   reason: Yup.string().trim().optional(),
 });

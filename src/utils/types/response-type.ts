@@ -209,3 +209,87 @@ export interface ApprovalRequest {
   requestedBy: ApprovalRequestUser;
   targetUser: ApprovalTargetUser;
 }
+
+export type Category = {
+  categoryId: string;
+  name: string;
+  slug: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+export interface ProductImage {
+  id: string;
+  imageId: string;
+  imageUrl: string;
+  isPrimary: boolean;
+  sortOrder: number;
+  altText?: string | null;
+  productId: string;
+  createdAt: string;
+}
+export interface ProductImageDetail extends ProductImage {
+  variants?: { variantId: string; sku: string }[];
+}
+export interface Variant {
+  variantId: string;
+  sku: string;
+  price: number;
+  stockQuantity: number;
+  size: string;
+  color: string[];
+  attributes?: Record<string, any>;
+  images: ProductImage[];
+  isActive: boolean;
+  productId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InstallmentPlan {
+  planId: string;
+  durationMonths: number;
+  interestPercentage: number;
+  active: boolean;
+  productId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ProductStatus = "DRAFT" | "PUBLISHED" | "SOLD_OUT" | "ARCHIVED";
+export interface Product {
+  productId: string;
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  categoryId: string;
+  category?: Category;
+  commissionRate: number;
+  status: ProductStatus;
+  price: number;
+  stockQuantity: number;
+  minPrice?: number;
+  maxPrice?: number;
+  variants: Variant[];
+  gallery: ProductImage[];
+  installmentPlans: InstallmentPlan[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ItemVariantSchema {
+  sku: string;
+  size: string;
+  color: string[];
+  stockQuantity: number;
+  price: number;
+}
+export interface SystemProductDef {
+  id: string;
+  name: string;
+  slug: string;
+  basePrice: number;
+  commissionRate: number;
+  variants: ItemVariantSchema[];
+}

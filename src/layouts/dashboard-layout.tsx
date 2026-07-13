@@ -135,7 +135,6 @@ export function DashboardLayout({
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   const currentPathName = pathSegments[pathSegments.length - 1] ?? "";
-  // const parentPathName = pathSegments[1];
   const buildUrl = (index: number) => {
     const segments = pathSegments.slice(0, index + 1);
     return `/${segments.join("/")}`;

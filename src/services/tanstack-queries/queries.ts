@@ -1,19 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import { apiService } from "@services/api-service";
 import { QUERY_KEYS } from "../query-keys";
-import type { SystemProductDef } from "@services/queries/catalog";
+import type { SystemProductDef } from "@utils/types/response-type";
 
-// Plans query
-// export const getSubscriptionPlansOptions = () =>
-//   queryOptions({
-//     queryKey: QUERY_KEYS.plans.all(),
-//     queryFn: async () => {
-//       const response = await apiService.get<any[]>("/subscriptions/plans");
-//       return response.data;
-//     },
-//   });
-
-// Products catalog query
 export const getProductsCatalogOptions = (page: number = 1) =>
   queryOptions({
     queryKey: QUERY_KEYS.products.all(page),
@@ -26,7 +15,6 @@ export const getProductsCatalogOptions = (page: number = 1) =>
     },
   });
 
-// Customer installments timeline query
 export const getCustomerInstallmentsOptions = (page: number = 1) =>
   queryOptions({
     queryKey: QUERY_KEYS.installments.customer(page),
@@ -39,7 +27,6 @@ export const getCustomerInstallmentsOptions = (page: number = 1) =>
     },
   });
 
-// Pending payouts clearing queue query
 export const getPendingPayoutsOptions = () =>
   queryOptions({
     queryKey: QUERY_KEYS.commissions.pending(),
@@ -49,7 +36,6 @@ export const getPendingPayoutsOptions = () =>
     },
   });
 
-// Ledger core aggregations dashboard summary query
 export const getLedgerAnalyticsOptions = () =>
   queryOptions({
     queryKey: QUERY_KEYS.ledger.analytics(),

@@ -27,6 +27,42 @@ const staffManagement = {
   },
 };
 
+const catalog = {
+  products: {
+    base: "/products",
+    details: (id: string) => `/products/${id}`,
+    bulkCreate: "/products/bulk",
+    search: "/products/search",
+    cursor: "/products/cursor",
+  },
+  gallery: {
+    base: (productId: string) => `/products/${productId}/gallery`,
+    reorder: (productId: string) => `/products/${productId}/gallery/reorder`,
+    primary: (productId: string, imageId: string) =>
+      `/products/${productId}/gallery/${imageId}/primary`,
+    metadata: (productId: string, imageId: string) =>
+      `/products/${productId}/gallery/${imageId}`,
+  },
+  variants: {
+    base: (productId: string) => `/variants/${productId}/variants`,
+    bulk: (productId: string) => `/variants/${productId}/bulk`,
+    details: (variantId: string) => `/variants/${variantId}`,
+    stock: (variantId: string) => `/variants/${variantId}/stock`,
+    status: (variantId: string) => `/variants/${variantId}/status`,
+    images: (variantId: string) => `/variants/${variantId}/images`,
+  },
+  installmentPlans: {
+    base: (productId: string) => `/products/${productId}/installment-plans`,
+    details: (planId: string) => `/installment-plans/${planId}`,
+    status: (planId: string) => `/installment-plans/${planId}/status`,
+  },
+  categories: {
+    base: "/categories",
+    details: (id: string) => `/categories/${id}`,
+  },
+};
+
 export const ENDPOINTS = {
   staffManagement,
+  catalog,
 };
