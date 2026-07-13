@@ -28,7 +28,9 @@ export const ProductsSearch = Yup.object({
   limit: Yup.string().optional(),
   sortOrder: Yup.string().oneOf(["desc", "asc"]).optional(),
   category: Yup.string().optional(),
-  status: Yup.string().oneOf(["DRAFT", "PUBLISHED", "SOLD_OUT", "ARCHIVED"]).optional(),
+  status: Yup.string()
+    .oneOf(["DRAFT", "PUBLISHED", "SOLD_OUT", "ARCHIVED"])
+    .optional(),
   search: Yup.string().optional(),
 });
 

@@ -20,10 +20,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { apiService } from "@services/api-service";
-import {
-  getMarketerCatalogQueryOptions,
-  type SystemProductDef,
-} from "@services/queries/catalog";
+import { getMarketerCatalogQueryOptions } from "@services/queries/catalog";
+import type { SystemProductDef } from "@utils/types/response-type";
 
 export default function ProductHub() {
   const [currentPage] = useState<number>(1);
