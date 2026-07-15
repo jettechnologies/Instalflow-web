@@ -22,6 +22,7 @@ import { Route as authCompanyOnboardingRouteImport } from './routes/(auth)/compa
 import { Route as AuthenticatedLayoutCustomerIndexRouteImport } from './routes/_authenticated/_layout/customer/index'
 import { Route as AuthenticatedLayoutMarketerOverviewRouteImport } from './routes/_authenticated/_layout/marketer/overview'
 import { Route as AuthenticatedLayoutCompanyLayoutRouteImport } from './routes/_authenticated/_layout/company/_layout'
+import { Route as AuthenticatedLayoutMarketerProductsIndexRouteImport } from './routes/_authenticated/_layout/marketer/products/index'
 import { Route as AuthenticatedLayoutCompanyLayoutPayoutsRouteImport } from './routes/_authenticated/_layout/company/_layout/payouts'
 import { Route as AuthenticatedLayoutCompanyLayoutOverviewRouteImport } from './routes/_authenticated/_layout/company/_layout/overview'
 import { Route as AuthenticatedLayoutCompanyLayoutApplicationsRouteImport } from './routes/_authenticated/_layout/company/_layout/applications'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedLayoutCompanyLayoutMarketersIndexRouteImport } fr
 import { Route as AuthenticatedLayoutCompanyLayoutApprovalsIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/approvals/index'
 import { Route as AuthenticatedLayoutCompanyLayoutAdminsIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/admins/index'
 import { Route as AuthenticatedLayoutCompanyLayoutProductsNewRouteImport } from './routes/_authenticated/_layout/company/_layout/products/new'
+import { Route as AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRouteImport } from './routes/_authenticated/_layout/marketer/products/$productId/$product-name/index'
 import { Route as AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/products/$productId/$product-name/index'
 import { Route as AuthenticatedLayoutCompanyLayoutMarketersMarketerIdMarketerNameIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/marketers/$marketerId/$marketer-name/index'
 import { Route as AuthenticatedLayoutCompanyLayoutAdminsAdminIdAdminNameIndexRouteImport } from './routes/_authenticated/_layout/company/_layout/admins/$adminId/$admin-name/index'
@@ -100,6 +102,12 @@ const AuthenticatedLayoutCompanyLayoutRoute =
     id: '/_layout',
     getParentRoute: () => AuthenticatedLayoutCompanyRoute,
   } as any)
+const AuthenticatedLayoutMarketerProductsIndexRoute =
+  AuthenticatedLayoutMarketerProductsIndexRouteImport.update({
+    id: '/marketer/products/',
+    path: '/marketer/products/',
+    getParentRoute: () => AuthenticatedLayoutRoute,
+  } as any)
 const AuthenticatedLayoutCompanyLayoutPayoutsRoute =
   AuthenticatedLayoutCompanyLayoutPayoutsRouteImport.update({
     id: '/payouts',
@@ -154,6 +162,14 @@ const AuthenticatedLayoutCompanyLayoutProductsNewRoute =
     path: '/products/new',
     getParentRoute: () => AuthenticatedLayoutCompanyLayoutRoute,
   } as any)
+const AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute =
+  AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRouteImport.update(
+    {
+      id: '/marketer/products/$productId/$product-name/',
+      path: '/marketer/products/$productId/$product-name/',
+      getParentRoute: () => AuthenticatedLayoutRoute,
+    } as any,
+  )
 const AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRoute =
   AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRouteImport.update(
     {
@@ -193,11 +209,13 @@ export interface FileRoutesByFullPath {
   '/company/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/company/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/company/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
+  '/marketer/products': typeof AuthenticatedLayoutMarketerProductsIndexRoute
   '/company/products/new': typeof AuthenticatedLayoutCompanyLayoutProductsNewRoute
   '/company/admins': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/company/approvals': typeof AuthenticatedLayoutCompanyLayoutApprovalsIndexRoute
   '/company/marketers': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
   '/company/products': typeof AuthenticatedLayoutCompanyLayoutProductsIndexRoute
+  '/marketer/products/$productId/$product-name': typeof AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute
   '/company/admins/$adminId/$admin-name': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdAdminNameIndexRoute
   '/company/marketers/$marketerId/$marketer-name': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdMarketerNameIndexRoute
   '/company/products/$productId/$product-name': typeof AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRoute
@@ -216,11 +234,13 @@ export interface FileRoutesByTo {
   '/company/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/company/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/company/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
+  '/marketer/products': typeof AuthenticatedLayoutMarketerProductsIndexRoute
   '/company/products/new': typeof AuthenticatedLayoutCompanyLayoutProductsNewRoute
   '/company/admins': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/company/approvals': typeof AuthenticatedLayoutCompanyLayoutApprovalsIndexRoute
   '/company/marketers': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
   '/company/products': typeof AuthenticatedLayoutCompanyLayoutProductsIndexRoute
+  '/marketer/products/$productId/$product-name': typeof AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute
   '/company/admins/$adminId/$admin-name': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdAdminNameIndexRoute
   '/company/marketers/$marketerId/$marketer-name': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdMarketerNameIndexRoute
   '/company/products/$productId/$product-name': typeof AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRoute
@@ -243,11 +263,13 @@ export interface FileRoutesById {
   '/_authenticated/_layout/company/_layout/applications': typeof AuthenticatedLayoutCompanyLayoutApplicationsRoute
   '/_authenticated/_layout/company/_layout/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/_authenticated/_layout/company/_layout/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
+  '/_authenticated/_layout/marketer/products/': typeof AuthenticatedLayoutMarketerProductsIndexRoute
   '/_authenticated/_layout/company/_layout/products/new': typeof AuthenticatedLayoutCompanyLayoutProductsNewRoute
   '/_authenticated/_layout/company/_layout/admins/': typeof AuthenticatedLayoutCompanyLayoutAdminsIndexRoute
   '/_authenticated/_layout/company/_layout/approvals/': typeof AuthenticatedLayoutCompanyLayoutApprovalsIndexRoute
   '/_authenticated/_layout/company/_layout/marketers/': typeof AuthenticatedLayoutCompanyLayoutMarketersIndexRoute
   '/_authenticated/_layout/company/_layout/products/': typeof AuthenticatedLayoutCompanyLayoutProductsIndexRoute
+  '/_authenticated/_layout/marketer/products/$productId/$product-name/': typeof AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute
   '/_authenticated/_layout/company/_layout/admins/$adminId/$admin-name/': typeof AuthenticatedLayoutCompanyLayoutAdminsAdminIdAdminNameIndexRoute
   '/_authenticated/_layout/company/_layout/marketers/$marketerId/$marketer-name/': typeof AuthenticatedLayoutCompanyLayoutMarketersMarketerIdMarketerNameIndexRoute
   '/_authenticated/_layout/company/_layout/products/$productId/$product-name/': typeof AuthenticatedLayoutCompanyLayoutProductsProductIdProductNameIndexRoute
@@ -268,11 +290,13 @@ export interface FileRouteTypes {
     | '/company/applications'
     | '/company/overview'
     | '/company/payouts'
+    | '/marketer/products'
     | '/company/products/new'
     | '/company/admins'
     | '/company/approvals'
     | '/company/marketers'
     | '/company/products'
+    | '/marketer/products/$productId/$product-name'
     | '/company/admins/$adminId/$admin-name'
     | '/company/marketers/$marketerId/$marketer-name'
     | '/company/products/$productId/$product-name'
@@ -291,11 +315,13 @@ export interface FileRouteTypes {
     | '/company/applications'
     | '/company/overview'
     | '/company/payouts'
+    | '/marketer/products'
     | '/company/products/new'
     | '/company/admins'
     | '/company/approvals'
     | '/company/marketers'
     | '/company/products'
+    | '/marketer/products/$productId/$product-name'
     | '/company/admins/$adminId/$admin-name'
     | '/company/marketers/$marketerId/$marketer-name'
     | '/company/products/$productId/$product-name'
@@ -317,11 +343,13 @@ export interface FileRouteTypes {
     | '/_authenticated/_layout/company/_layout/applications'
     | '/_authenticated/_layout/company/_layout/overview'
     | '/_authenticated/_layout/company/_layout/payouts'
+    | '/_authenticated/_layout/marketer/products/'
     | '/_authenticated/_layout/company/_layout/products/new'
     | '/_authenticated/_layout/company/_layout/admins/'
     | '/_authenticated/_layout/company/_layout/approvals/'
     | '/_authenticated/_layout/company/_layout/marketers/'
     | '/_authenticated/_layout/company/_layout/products/'
+    | '/_authenticated/_layout/marketer/products/$productId/$product-name/'
     | '/_authenticated/_layout/company/_layout/admins/$adminId/$admin-name/'
     | '/_authenticated/_layout/company/_layout/marketers/$marketerId/$marketer-name/'
     | '/_authenticated/_layout/company/_layout/products/$productId/$product-name/'
@@ -423,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutRouteImport
       parentRoute: typeof AuthenticatedLayoutCompanyRoute
     }
+    '/_authenticated/_layout/marketer/products/': {
+      id: '/_authenticated/_layout/marketer/products/'
+      path: '/marketer/products'
+      fullPath: '/marketer/products'
+      preLoaderRoute: typeof AuthenticatedLayoutMarketerProductsIndexRouteImport
+      parentRoute: typeof AuthenticatedLayoutRoute
+    }
     '/_authenticated/_layout/company/_layout/payouts': {
       id: '/_authenticated/_layout/company/_layout/payouts'
       path: '/payouts'
@@ -485,6 +520,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/company/products/new'
       preLoaderRoute: typeof AuthenticatedLayoutCompanyLayoutProductsNewRouteImport
       parentRoute: typeof AuthenticatedLayoutCompanyLayoutRoute
+    }
+    '/_authenticated/_layout/marketer/products/$productId/$product-name/': {
+      id: '/_authenticated/_layout/marketer/products/$productId/$product-name/'
+      path: '/marketer/products/$productId/$product-name'
+      fullPath: '/marketer/products/$productId/$product-name'
+      preLoaderRoute: typeof AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRouteImport
+      parentRoute: typeof AuthenticatedLayoutRoute
     }
     '/_authenticated/_layout/company/_layout/products/$productId/$product-name/': {
       id: '/_authenticated/_layout/company/_layout/products/$productId/$product-name/'
@@ -577,6 +619,8 @@ interface AuthenticatedLayoutRouteChildren {
   AuthenticatedLayoutCompanyRoute: typeof AuthenticatedLayoutCompanyRouteWithChildren
   AuthenticatedLayoutMarketerOverviewRoute: typeof AuthenticatedLayoutMarketerOverviewRoute
   AuthenticatedLayoutCustomerIndexRoute: typeof AuthenticatedLayoutCustomerIndexRoute
+  AuthenticatedLayoutMarketerProductsIndexRoute: typeof AuthenticatedLayoutMarketerProductsIndexRoute
+  AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute: typeof AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute
 }
 
 const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
@@ -584,6 +628,10 @@ const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
   AuthenticatedLayoutMarketerOverviewRoute:
     AuthenticatedLayoutMarketerOverviewRoute,
   AuthenticatedLayoutCustomerIndexRoute: AuthenticatedLayoutCustomerIndexRoute,
+  AuthenticatedLayoutMarketerProductsIndexRoute:
+    AuthenticatedLayoutMarketerProductsIndexRoute,
+  AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute:
+    AuthenticatedLayoutMarketerProductsProductIdProductNameIndexRoute,
 }
 
 const AuthenticatedLayoutRouteWithChildren =

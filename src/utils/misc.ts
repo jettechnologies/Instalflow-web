@@ -44,6 +44,19 @@ export const formatDate = (
   return isValid(parsedDate) ? format(parsedDate, DATE_FORMATS[type]) : "-";
 };
 
+export const ngn = (value: number, options?: Intl.NumberFormatOptions) =>
+  formatCurrency(value, "NGN", options);
+
+export const monthlyPayment = (
+  principal: number,
+  months: number,
+  ratePct = 0
+): number => {
+  if (!months || months <= 0) return principal;
+  const totalFinanced = principal * (1 + ratePct / 100);
+  return Math.round(totalFinanced / months);
+};
+
 export const slugify = (value: string): string =>
   value
     .trim()

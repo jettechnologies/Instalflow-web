@@ -14,20 +14,23 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { TrashIcon, UploadIcon } from "@phosphor-icons/react";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+  ArrowClockwiseIcon,
+  TrashIcon,
+  UploadIcon,
+} from "@phosphor-icons/react";
 import {
   useRemoveGalleryImage,
   useReorderGalleryImages,
   useSetPrimaryImage,
   useUploadGalleryImages,
 } from "@services/tanstack-mutations/catalog";
-import { getProductGalleryQueryOptions } from "@services/tanstack-queries/catalog";
 import type { ProductImage } from "@utils/types/response-type";
 
 interface UploadEntry {
   id: string;
   name: string;
+  file: File;
   progress: number;
   failed: boolean;
 }
@@ -45,7 +48,6 @@ export function Step2Gallery({
   onNext,
   onBack,
 }: Step2GalleryProps) {
-  const queryClient = useQueryClient();
   const uploadMutation = useUploadGalleryImages(productId);
   const deleteMutation = useRemoveGalleryImage(productId);
   const reorderMutation = useReorderGalleryImages(productId);
@@ -56,13 +58,7 @@ export function Step2Gallery({
   const [uploads, setUploads] = useState<UploadEntry[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  const uploadFile = async (file: File) => {
-    const uid = Math.random().toString(36).substring(7);
-    setUploads((prev) => [
-      ...prev,
-      { id: uid, name: file.name, progress: 10, failed: false },
-    ]);
-
+  const runUpload = async (uid: string, file: File) => {
     const formData = new FormData();
     formData.append("images", file);
     formData.append(
@@ -84,9 +80,6 @@ export function Step2Gallery({
       await uploadMutation.mutateAsync(formData);
       clearInterval(timer);
       setUploads((prev) => prev.filter((up) => up.id !== uid));
-      queryClient.invalidateQueries(
-        getProductGalleryQueryOptions(productId) as any
-      );
     } catch (_) {
       clearInterval(timer);
       setUploads((prev) =>
@@ -95,6 +88,31 @@ export function Step2Gallery({
         )
       );
     }
+  };
+
+  const uploadFile = async (file: File) => {
+    const uid = Math.random().toString(36).substring(7);
+    setUploads((prev) => [
+      ...prev,
+      { id: uid, file, name: file.name, progress: 10, failed: false },
+    ]);
+    await runUpload(uid, file);
+  };
+
+  const retryUpload = async (uid: string) => {
+    const entry = uploads.find((up) => up.id === uid);
+    if (!entry) return;
+
+    setUploads((prev) =>
+      prev.map((up) =>
+        up.id === uid ? { ...up, failed: false, progress: 10 } : up
+      )
+    );
+    await runUpload(uid, entry.file);
+  };
+
+  const dismissUpload = (uid: string) => {
+    setUploads((prev) => prev.filter((up) => up.id !== uid));
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -193,9 +211,31 @@ export function Step2Gallery({
                 {up.name}
               </Text>
               {up.failed ? (
-                <Text fontSize="xs" color="statusDanger">
-                  Failed — retry
-                </Text>
+                // <Text fontSize="xs" color="statusDanger">
+                //   Failed — retry
+                // </Text>
+                <HStack spacing={2}>
+                  <Text fontSize="xs" color="statusDanger">
+                    Failed
+                  </Text>
+                  <IconButton
+                    aria-label="Retry upload"
+                    icon={<ArrowClockwiseIcon size={12} />}
+                    size="xs"
+                    variant="ghost"
+                    colorScheme="purple"
+                    isLoading={uploadMutation.isPending}
+                    onClick={() => retryUpload(up.id)}
+                  />
+                  <IconButton
+                    aria-label="Dismiss failed upload"
+                    icon={<TrashIcon size={12} />}
+                    size="xs"
+                    variant="ghost"
+                    colorScheme="red"
+                    onClick={() => dismissUpload(up.id)}
+                  />
+                </HStack>
               ) : (
                 <Progress
                   value={up.progress}

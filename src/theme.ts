@@ -111,6 +111,17 @@ const theme = extendTheme({
           color: tokens.brand.primary,
           _hover: { bg: tokens.brand.primary, color: "white" },
         },
+        // ghost: {
+        //   bg: "transparent",
+        //   color: tokens.brand.primary,
+        // },
+        redOutline: {
+          bg: "transparent",
+          border: "1px solid",
+          borderColor: tokens.status.danger,
+          color: tokens.status.danger,
+          _hover: { bg: tokens.status.danger, color: "white" },
+        },
       },
       defaultProps: { variant: "gradient", size: "md" },
     },

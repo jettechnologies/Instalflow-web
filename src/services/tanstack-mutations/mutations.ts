@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToastContext } from "@hooks/context";
 import { apiService } from "@services/api-service";
 import { QUERY_KEYS } from "../query-keys";
+import { generateReferralLink } from "@services/mutations/kyc";
 
 // Phase 1: Start company onboarding
 // export const useStartOnboarding = () => {
@@ -70,7 +71,7 @@ export const useSubmitKYCDocument = (token: string) => {
       const response = await apiService.post<any>("/kyc/submit", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -86,28 +87,25 @@ export const useSubmitKYCDocument = (token: string) => {
 
 // Phase 3: Marketer custom link configuration
 export const useGenerateReferralLink = () => {
-  const { openToast } = useToastContext();
   return useMutation({
-    mutationFn: async (payload: { productSlug: string; variantId: string }) => {
-      const response = await apiService.post<{ referralLink: string }>(
-        "/kyc/referral-link",
-        payload
-      );
-      return response.data;
-    },
-    onSuccess: (data) => {
-      if (data?.referralLink) {
-        navigator.clipboard.writeText(data.referralLink);
-        openToast("Attribution route copied to clipboard", "success");
-      }
-    },
+    // mutationFn: async (payload: {
+    //   productSlug: string;
+    //   variantId?: string;
+    //   planId?: string;
+    // }) => {
+    //   const response = await generateReferralLink(payload);
+    //   console.log(response.data, "response data")
+    //   return response.data;
+    // },
+    mutationFn: generateReferralLink,
     meta: {
+      invalidatesQuery: QUERY_KEYS.marketer.links(),
       errorMessage: "Link configuration generator failed.",
     },
   });
 };
 
-// Phase 4: Settle installment billing term
+// Phase 4: Settle installment billing termsss
 export const useSettleInstallment = () => {
   const { openToast } = useToastContext();
   return useMutation({

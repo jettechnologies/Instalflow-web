@@ -114,7 +114,7 @@ export function ProductDetailsContainer({
         </HStack>
 
         <HStack spacing={3}>
-          {product.status === "DRAFT" && (
+          {(product.status === "DRAFT" || product.status === "ARCHIVED") && (
             <Button
               size="sm"
               bgGradient="var(--brand-gradient)"
@@ -125,13 +125,15 @@ export function ProductDetailsContainer({
               Publish Catalog Item
             </Button>
           )}
-          <Button
-            size="sm"
-            colorScheme="red"
-            variant="outline"
-            onClick={handleArchive}>
-            Archive Product
-          </Button>
+          {product.status === "PUBLISHED" && (
+            <Button
+              size="sm"
+              colorScheme="red"
+              variant="outline"
+              onClick={handleArchive}>
+              Archive Product
+            </Button>
+          )}
         </HStack>
       </HStack>
 

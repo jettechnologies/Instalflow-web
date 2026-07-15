@@ -12,14 +12,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { TrashIcon, UploadIcon } from "@phosphor-icons/react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useRemoveGalleryImage,
   useReorderGalleryImages,
   useSetPrimaryImage,
   useUploadGalleryImages,
 } from "@services/tanstack-mutations/catalog";
-import { getProductGalleryQueryOptions } from "@services/tanstack-queries/catalog";
 import type { ProductImage } from "@utils/types/response-type";
 
 interface ProductGallerySidebarProps {
@@ -31,7 +29,14 @@ export function ProductGallerySidebar({
   productId,
   gallery,
 }: ProductGallerySidebarProps) {
-  const queryClient = useQueryClient();
+  const [loadingPrimaryImageId, setLoadingPrimaryImageId] = useState<
+    string | null
+  >(null);
+
+  const [loadingDeleteImageId, setLoadingDeleteImageId] = useState<
+    string | null
+  >(null);
+
   const uploadMutation = useUploadGalleryImages(productId);
   const reorderMutation = useReorderGalleryImages(productId);
   const setPrimaryMutation = useSetPrimaryImage(productId);
@@ -39,11 +44,6 @@ export function ProductGallerySidebar({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-
-  const invalidate = () =>
-    queryClient.invalidateQueries(
-      getProductGalleryQueryOptions(productId) as any
-    );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
@@ -57,7 +57,6 @@ export function ProductGallerySidebar({
     );
     try {
       await uploadMutation.mutateAsync(formData);
-      invalidate();
     } catch (_) {}
   };
 
@@ -73,6 +72,26 @@ export function ProductGallerySidebar({
       await reorderMutation.mutateAsync(list.map((img) => img.imageId));
     } catch (_) {}
     setDraggedIndex(null);
+  };
+
+  const handleSetPrimary = async (imageId: string) => {
+    setLoadingPrimaryImageId(imageId);
+
+    try {
+      await setPrimaryMutation.mutateAsync(imageId);
+    } finally {
+      setLoadingPrimaryImageId(null);
+    }
+  };
+
+  const handleDelete = async (imageId: string) => {
+    setLoadingDeleteImageId(imageId);
+
+    try {
+      await deleteMutation.mutateAsync(imageId);
+    } finally {
+      setLoadingDeleteImageId(null);
+    }
   };
 
   return (
@@ -152,7 +171,12 @@ export function ProductGallerySidebar({
                   size="xs"
                   variant="ghost"
                   fontSize="9px"
-                  onClick={() => setPrimaryMutation.mutate(img.imageId)}>
+                  color="brand.500"
+                  onClick={() => handleSetPrimary(img.imageId)}
+                  isLoading={
+                    loadingPrimaryImageId === img.imageId &&
+                    setPrimaryMutation.isPending
+                  }>
                   Set Primary
                 </Button>
               )}
@@ -162,7 +186,11 @@ export function ProductGallerySidebar({
                 size="xs"
                 variant="ghost"
                 colorScheme="red"
-                onClick={() => deleteMutation.mutate(img.imageId)}
+                onClick={() => handleDelete(img.imageId)}
+                isLoading={
+                  loadingDeleteImageId === img.imageId &&
+                  deleteMutation.isPending
+                }
               />
             </HStack>
           </HStack>

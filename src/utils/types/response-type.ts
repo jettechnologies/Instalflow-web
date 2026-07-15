@@ -219,15 +219,25 @@ export type Category = {
   updatedAt: string;
 };
 export interface ProductImage {
-  id: string;
   imageId: string;
   imageUrl: string;
   isPrimary: boolean;
   sortOrder: number;
   altText?: string | null;
   productId: string;
+  cloudinaryPublicId?: string;
   createdAt: string;
 }
+
+export interface VariantImage {
+  variantId: string;
+  imageId: string;
+  isPrimary: boolean;
+  sortOrder: number;
+  createdAt: string;
+  image: ProductImage;
+}
+
 export interface ProductImageDetail extends ProductImage {
   variants?: { variantId: string; sku: string }[];
 }
@@ -239,7 +249,7 @@ export interface Variant {
   size: string;
   color: string[];
   attributes?: Record<string, any>;
-  images: ProductImage[];
+  images: VariantImage[];
   isActive: boolean;
   productId: string;
   createdAt: string;
@@ -272,7 +282,7 @@ export interface Product {
   minPrice?: number;
   maxPrice?: number;
   variants: Variant[];
-  gallery: ProductImage[];
+  images: ProductImage[];
   installmentPlans: InstallmentPlan[];
   createdAt: string;
   updatedAt: string;

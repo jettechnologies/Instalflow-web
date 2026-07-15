@@ -82,7 +82,7 @@ export const getProductVariantsColumns = ({
           type="number"
           isDisabled={isPending}
           defaultValue={v.stockQuantity}
-          key={v.stockQuantity} // resync if a refetch changes the server value
+          key={v.stockQuantity}
           onBlur={(e) => {
             const stock = parseInt(e.target.value, 10);
             if (!Number.isNaN(stock) && stock !== v.stockQuantity) {

@@ -44,7 +44,7 @@ const catalog = {
       `/products/${productId}/gallery/${imageId}`,
   },
   variants: {
-    base: (productId: string) => `/variants/${productId}/variants`,
+    base: (productId: string) => `/variants/${productId}`,
     bulk: (productId: string) => `/variants/${productId}/bulk`,
     details: (variantId: string) => `/variants/${variantId}`,
     stock: (variantId: string) => `/variants/${variantId}/stock`,

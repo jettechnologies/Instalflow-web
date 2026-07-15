@@ -22,7 +22,8 @@ export interface KYCSubmissionResponse {
 
 export interface ReferralLinkParams {
   productSlug: string;
-  variantId: string;
+  variantId?: string;
+  planId?: string;
 }
 
 export const registerConsumer = async (
@@ -50,6 +51,11 @@ export const submitKYCDocument = async (
 
 export const generateReferralLink = async (
   data: ReferralLinkParams
-): Promise<StandardResponse<{ referralLink: string }>> => {
-  return apiService.post<{ referralLink: string }>("/kyc/referral-link", data);
+): Promise<
+  StandardResponse<{ referralLink: string; referralCode: string }>
+> => {
+  return apiService.post<{ referralLink: string; referralCode: string }>(
+    "/kyc/referral-link",
+    data
+  );
 };

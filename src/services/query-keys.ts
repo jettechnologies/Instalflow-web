@@ -99,6 +99,11 @@ export const QUERY_KEYS = {
     base: () => ["subscription_plans"],
     all: () => [...QUERY_KEYS.plans.base(), "all"],
   },
+  marketer: {
+    base: () => ["marketer"],
+    products: () => [...QUERY_KEYS.marketer.base(), "products"],
+    links: () => [...QUERY_KEYS.marketer.base(), "links"],
+  },
 };
 
 // export interface SearchEndpointParams {
