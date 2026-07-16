@@ -1,6 +1,5 @@
 import { apiService } from "@services/api-service";
 import type {
-  InternalNotification,
   NotificationsPage,
   UnreadCountResponse,
 } from "@utils/types/notification";
