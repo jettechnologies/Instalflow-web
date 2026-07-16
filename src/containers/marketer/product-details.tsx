@@ -24,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@components/shared/AppShell";
 import { getProductDetailsQueryOptions } from "@services/tanstack-queries/catalog";
 import { GenerateLinkModal } from "@layouts/modal-layout/generate-link-modal";
-import { ngn } from "@utils/misc";
+import { formatCurrency } from "@utils/misc";
 import type { InstallmentPlan, Variant } from "@utils/types/response-type";
 import {
   StatCard,
@@ -123,8 +123,8 @@ export function MarketerProductDetails({ productId }: { productId: string }) {
     product.maxPrice != null &&
     product.minPrice !== product.maxPrice;
   const displayPrice = hasRange
-    ? `${ngn(product.minPrice!)} – ${ngn(product.maxPrice!)}`
-    : ngn(product.price);
+    ? `${formatCurrency(product.minPrice!)} – ${formatCurrency(product.maxPrice!)}`
+    : formatCurrency(product.price);
   const selectedPrice = selectedVariant?.price ?? product.price;
   const commissionEarning = (selectedPrice * product.commissionRate) / 100;
   const overallStock = stockLevel(totalStock);
@@ -385,7 +385,8 @@ export function MarketerProductDetails({ productId }: { productId: string }) {
                       {sizeKeyOf(selectedVariant)}
                     </Text>
                     <Text fontSize="11px" color="textMuted">
-                      SKU {selectedVariant.sku} · {ngn(selectedVariant.price)}
+                      SKU {selectedVariant.sku} ·{" "}
+                      {formatCurrency(selectedVariant.price)}
                     </Text>
                   </Box>
                   <HStack spacing={2}>
@@ -407,7 +408,7 @@ export function MarketerProductDetails({ productId }: { productId: string }) {
             <StatCard label="Price" value={displayPrice} />
             <StatCard
               label="You earn"
-              value={ngn(commissionEarning)}
+              value={formatCurrency(commissionEarning)}
               hint={`${product.commissionRate}% commission`}
             />
             <StatCard
@@ -457,7 +458,8 @@ export function MarketerProductDetails({ productId }: { productId: string }) {
                           {pl.durationMonths} months
                         </Text>
                         <Text fontSize="11px" color="textMuted">
-                          {pl.interestPercentage}% interest · ~{ngn(monthly)}/mo
+                          {pl.interestPercentage}% interest · ~
+                          {formatCurrency(monthly)}/mo
                         </Text>
                       </Box>
                       <Badge

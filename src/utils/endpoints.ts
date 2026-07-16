@@ -31,6 +31,7 @@ const catalog = {
   products: {
     base: "/products",
     details: (id: string) => `/products/${id}`,
+    bySlug: (slug: string) => `/products/slug/${slug}`,
     bulkCreate: "/products/bulk",
     search: "/products/search",
     cursor: "/products/cursor",

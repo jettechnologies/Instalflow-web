@@ -6,6 +6,7 @@ import {
   getProductInstallmentPlans,
   getCategories,
   getAllProducts,
+  getProductBySlug,
 } from "../queries/catalog";
 
 export const getAllProductsQueryOptions = (params: any) =>
@@ -17,13 +18,24 @@ export const getAllProductsQueryOptions = (params: any) =>
     },
   });
 
-export const getProductDetailsQueryOptions = (id: string) =>
+export const getProductDetailsQueryOptions = (productId: string) =>
   queryOptions({
-    queryKey: QUERY_KEYS.products.details(id),
+    queryKey: QUERY_KEYS.products.details(productId),
     queryFn: async () => {
-      const response = await getProductDetails(id);
+      const response = await getProductDetails(productId);
       return response.data;
     },
+    enabled: Boolean(productId),
+  });
+
+export const getProductBySlugQueryOptions = (slug: string) =>
+  queryOptions({
+    queryKey: QUERY_KEYS.products.bySlug(slug),
+    queryFn: async () => {
+      const response = await getProductBySlug(slug);
+      return response.data;
+    },
+    enabled: Boolean(slug),
   });
 
 export const getProductGalleryQueryOptions = (productId: string) =>

@@ -12,7 +12,7 @@ import {
 import { Check, Copy, Link2, MessageCircle, Send } from "lucide-react";
 import { useGenerateReferralLink } from "@services/tanstack-mutations/mutations";
 import { useToastContext } from "@hooks/context";
-import { ngn, monthlyPayment } from "@utils/misc";
+import { formatCurrency, monthlyPayment } from "@utils/misc";
 import type {
   InstallmentPlan,
   Product,
@@ -111,7 +111,7 @@ export function GenerateLinkModal({
   const share = (channel: "whatsapp" | "sms") => {
     if (!generated) return;
     const text = encodeURIComponent(
-      `Finance ${product.name} (${selected ? variantLabel(selected) : ""}) on Instalflow — ${ngn(
+      `Finance ${product.name} (${selected ? variantLabel(selected) : ""}) on Instalflow — ${formatCurrency(
         mpay
       )}/mo for ${tenor} months. ${generated.url}`
     );
@@ -300,7 +300,7 @@ export function GenerateLinkModal({
                   Total financed
                 </Text>
                 <Text fontSize="14px" fontWeight={700}>
-                  {ngn(effectivePrice * (1 + rate / 100))}
+                  {formatCurrency(effectivePrice * (1 + rate / 100))}
                 </Text>
               </Box>
               <Box>
@@ -308,7 +308,7 @@ export function GenerateLinkModal({
                   Monthly
                 </Text>
                 <Text fontSize="14px" fontWeight={700} color="#A78BFA">
-                  {ngn(mpay)}
+                  {formatCurrency(mpay)}
                 </Text>
               </Box>
               <Box>
@@ -316,7 +316,7 @@ export function GenerateLinkModal({
                   Your commission
                 </Text>
                 <Text fontSize="14px" fontWeight={700} color="#34D399">
-                  {ngn(expectedCommission)}
+                  {formatCurrency(expectedCommission)}
                 </Text>
               </Box>
             </SimpleGrid>

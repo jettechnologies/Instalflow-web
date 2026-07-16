@@ -44,9 +44,6 @@ export const formatDate = (
   return isValid(parsedDate) ? format(parsedDate, DATE_FORMATS[type]) : "-";
 };
 
-export const ngn = (value: number, options?: Intl.NumberFormatOptions) =>
-  formatCurrency(value, "NGN", options);
-
 export const monthlyPayment = (
   principal: number,
   months: number,

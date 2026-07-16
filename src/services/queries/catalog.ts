@@ -29,6 +29,10 @@ export const getProductDetails = (id: string) => {
   return apiService.get<Product>(ENDPOINTS.catalog.products.details(id));
 };
 
+export const getProductBySlug = (slug: string) => {
+  return apiService.get<Product>(ENDPOINTS.catalog.products.bySlug(slug));
+};
+
 export const getProductGallery = (productId: string) => {
   return apiService.get<ProductImageDetail[]>(
     ENDPOINTS.catalog.gallery.base(productId)

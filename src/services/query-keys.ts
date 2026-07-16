@@ -58,6 +58,7 @@ export const QUERY_KEYS = {
       "installment-plans",
       productId,
     ],
+    bySlug: (slug: string) => [...QUERY_KEYS.products.base(), "by-slug", slug],
   },
   categories: {
     base: () => ["categories"],
@@ -103,6 +104,21 @@ export const QUERY_KEYS = {
     base: () => ["marketer"],
     products: () => [...QUERY_KEYS.marketer.base(), "products"],
     links: () => [...QUERY_KEYS.marketer.base(), "links"],
+  },
+  notifications: {
+    base: () => ["notifications"],
+    list: (page: number, limit: number) => [
+      ...QUERY_KEYS.notifications.base(),
+      "list",
+      page,
+      limit,
+    ],
+    listInfinite: (limit: number) => [
+      ...QUERY_KEYS.notifications.base(),
+      "list",
+      limit,
+    ],
+    unreadCount: () => [...QUERY_KEYS.notifications.base(), "unread-count"],
   },
 };
 
