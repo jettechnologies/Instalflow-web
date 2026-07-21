@@ -65,3 +65,13 @@ export const reviewSchema = Yup.object({
 });
 
 export type ReviewSchemaType = Yup.InferType<typeof reviewSchema>;
+
+export const ApplicationsSearch = Yup.object({
+  page: Yup.string().optional(),
+  limit: Yup.string().optional(),
+  sortOrder: Yup.string().oneOf(["desc", "asc"]).optional(),
+  search: Yup.string().optional(),
+  status: Yup.string().oneOf(["PENDING", "APPROVED", "REJECTED"]).optional(),
+});
+
+export type ApplicationsSearchType = Yup.InferType<typeof ApplicationsSearch>;

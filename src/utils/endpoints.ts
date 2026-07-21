@@ -27,6 +27,17 @@ const staffManagement = {
   },
 };
 
+const kyc = {
+  base: "/kyc/applications",
+  detail: (applicationId: string) => `/kyc/applications/${applicationId}`,
+  approve: (applicationId: string) =>
+    `/kyc/applications/${applicationId}/approve`,
+  reject: (applicationId: string) =>
+    `/kyc/applications/${applicationId}/reject`,
+  document: (applicationId: string) =>
+    `/kyc/applications/${applicationId}/document`,
+};
+
 const catalog = {
   products: {
     base: "/products",
@@ -65,5 +76,6 @@ const catalog = {
 
 export const ENDPOINTS = {
   staffManagement,
+  kyc,
   catalog,
 };

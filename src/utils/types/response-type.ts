@@ -1,5 +1,6 @@
 import type { UserRole } from "./auth";
 import { APPROVAL_STATUS } from "../misc";
+import type { PaginatedData } from "@services/api-service";
 
 export type ApprovalAction = "TOGGLE_ACTIVE" | "DELETE_ACCOUNT";
 export type UserActions = "TOGGLE_STATUS" | "DELETE_ACCOUNT";
@@ -303,3 +304,100 @@ export interface SystemProductDef {
   commissionRate: number;
   variants: ItemVariantSchema[];
 }
+
+export type KycStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type KycOnboardingStatus =
+  | "PENDING_KYC"
+  | "KYC_SUBMITTED"
+  | "APPROVED"
+  | "EXPIRED"
+  | "EXPIRING"
+  | "CANCELLED";
+
+export interface ReferredByMarketer {
+  name: string;
+  email: string;
+}
+
+export interface KycUser {
+  userId: string;
+  name: string;
+  email: string;
+  referredByMarketerId: string | null;
+  referredByMarketer: ReferredByMarketer | null;
+}
+
+export interface KycProduct {
+  productId: string;
+  name: string;
+  slug: string;
+  commissionRate: string;
+}
+
+export interface FinancingContract {
+  contractId: string;
+  status: string;
+  totalFinanced: string;
+}
+
+export interface KycDocumentAsset {
+  assetId: string;
+  fileSize: number;
+  mimeType: string;
+  scheduledDeletionAt: string | null;
+}
+
+export interface OnboardingSession {
+  sessionId: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  marketerId: string;
+  companyId: string;
+  status: string;
+  expiresAt: string;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  marketer: OnboardingMarketer;
+  company: OnboardingCompany;
+}
+export interface OnboardingMarketer {
+  userId: string;
+  name: string;
+  email: string;
+  referralCode: string;
+  createdById: string | null;
+}
+export interface OnboardingCompany {
+  companyId: string;
+  name: string;
+}
+
+export interface KycApplication {
+  kycApplicationId: string;
+  userId: string;
+  productId: string;
+  installmentPlanId: string;
+  variantId: string;
+  idType: string;
+  idNumber: string;
+  status: KycStatus;
+  marketerApproved: boolean;
+  marketerApprovedAt: string | null;
+  adminApproved: boolean;
+  adminApprovedAt: string | null;
+  rejectionReason: string | null;
+  legalHold: boolean;
+  isUnderFraudReview: boolean;
+  createdAt: string;
+  updatedAt: string;
+  onboardingSession: OnboardingSession;
+  user: KycUser;
+  product: KycProduct;
+  financingContract: FinancingContract | null;
+  kycDocumentAssets: KycDocumentAsset[];
+}
+
+export interface PaginatedKycApplications
+  extends PaginatedData<"applications", KycApplication> {}

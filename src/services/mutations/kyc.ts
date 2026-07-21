@@ -1,4 +1,5 @@
 import { apiService, type StandardResponse } from "@services/api-service";
+import { ENDPOINTS } from "@utils/endpoints";
 
 export interface KYCRegisterParams {
   name: string;
@@ -58,4 +59,29 @@ export const generateReferralLink = async (
     "/kyc/referral-link",
     data
   );
+};
+
+export const approveKycApplication = async (
+  applicationId: string
+): Promise<{ success: boolean; message: string; status: string }> => {
+  const response = await apiService.post<{
+    success: boolean;
+    message: string;
+    status: string;
+  }>(ENDPOINTS.kyc.approve(applicationId));
+
+  return response.data;
+};
+
+export const rejectKycApplication = async (
+  applicationId: string,
+  reason: string
+): Promise<{ success: boolean; message: string; status: string }> => {
+  const response = await apiService.post<{
+    success: boolean;
+    message: string;
+    status: string;
+  }>(ENDPOINTS.kyc.reject(applicationId), { reason });
+
+  return response.data;
 };

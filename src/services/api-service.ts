@@ -97,19 +97,6 @@ const buildMutationHeaders = async (
   return headers;
 };
 
-// const extractErrorMessage = async (
-//   response: Response,
-//   fallback: string
-// ): Promise<never> => {
-//   const text = await response.text();
-//   let message = fallback;
-//   try {
-//     const json = JSON.parse(text);
-//     message = json.message ?? message;
-//   } catch (_) {}
-//   throw new Error(message);
-// };
-
 const handleUnauthorized = async () => {
   try {
     setAuthToken(null);
@@ -131,6 +118,11 @@ const handleUnauthorized = async () => {
   }
 };
 
+const unauthorizedMessages = new Set([
+  "Session has been revoked or expired. Please login again.",
+  "jwt expired",
+]);
+
 const extractErrorMessage = async (
   response: Response,
   fallback: string
@@ -142,10 +134,7 @@ const extractErrorMessage = async (
 
     message = data?.message ?? fallback;
 
-    if (
-      response.status === 401 &&
-      message === "Session has been revoked or expired. Please login again."
-    ) {
+    if (response.status === 401 && unauthorizedMessages.has(message)) {
       await handleUnauthorized();
 
       throw new Error(
@@ -175,11 +164,17 @@ const extractErrorMessage = async (
 export const apiService = {
   get: async <T>(
     url: string,
-    params?: Record<string, string>
+    params?: Record<string, any>
   ): Promise<StandardResponse<T>> => {
     let finalUrl = url;
     if (params) {
-      const qs = new URLSearchParams(params).toString();
+      const queryParams: Record<string, string> = {};
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== null && val !== "") {
+          queryParams[key] = String(val);
+        }
+      });
+      const qs = new URLSearchParams(queryParams).toString();
       if (qs) finalUrl += `?${qs}`;
     }
 
