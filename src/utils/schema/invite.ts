@@ -45,6 +45,7 @@ export const InviteSearchSchema = Yup.object({
   ref: optionalString,
   product: optionalString,
   variant: optionalString,
+  installmentPlan: optionalString,
 });
 
-export type InviteSearch = Yup.InferType<typeof InviteSearchSchema>;
+export type InviteSearchType = Yup.InferType<typeof InviteSearchSchema>;

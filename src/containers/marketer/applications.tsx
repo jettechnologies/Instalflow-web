@@ -24,6 +24,7 @@ import { OptionalSelectField, type Option } from "@components/forms/select";
 
 const STATUS_LABEL: Record<KycStatus, string> = {
   PENDING: "Pending",
+  APPROVAL_PROCESSING: "Approval Processing",
   APPROVED: "Approved",
   REJECTED: "Rejected",
 };

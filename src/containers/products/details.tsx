@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Badge,
   Button,
   Heading,
   HStack,
-  IconButton,
   SimpleGrid,
   Text,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ArrowLeftIcon } from "@phosphor-icons/react";
 import {
   getCategoriesQueryOptions,
   getProductDetailsQueryOptions,
@@ -93,13 +91,6 @@ export function ProductDetailsContainer({
       {/* Header row */}
       <HStack justify="space-between" flexWrap="wrap" gap={3}>
         <HStack spacing={3}>
-          <IconButton
-            aria-label="Back to catalog"
-            icon={<ArrowLeftIcon size={16} />}
-            as={Link}
-            to="/company/products"
-            variant="ghost"
-          />
           <Heading size="lg">{product.name}</Heading>
           <Badge
             colorScheme={

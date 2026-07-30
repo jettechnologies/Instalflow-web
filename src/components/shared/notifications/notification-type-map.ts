@@ -1,3 +1,5 @@
+import { useAuth } from "@context/auth-provider";
+import type { UserRole } from "@utils/types";
 import {
   Bell,
   FileText,
@@ -18,20 +20,28 @@ export interface NotificationTypeConfig {
   icon: typeof Bell;
   tone: "info" | "success" | "warning" | "danger" | "neutral";
   label: string;
-  getRoute?: (metadata: Record<string, unknown> | null) => string | null;
+  getRoute?: (
+    metadata: Record<string, unknown> | null,
+    role?: UserRole
+  ) => string | null;
 }
+
+const isCompanySide = (role?: UserRole) =>
+  role === "ADMIN" || role === "COMPANY";
 
 export const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeConfig> = {
   KYC_APPLICATION_SUBMITTED: {
     icon: FileText,
     tone: "info",
     label: "KYC Application",
-    getRoute: (meta) => {
+    getRoute: (meta, role) => {
       const applicationId = meta?.applicationId as string | undefined;
       const customerName = meta?.customerName as string | undefined;
-      if (applicationId && customerName)
-        return `/company/applications/${applicationId}/${customerName}`;
-      return null;
+      if (!applicationId || !customerName) return null;
+
+      return isCompanySide(role)
+        ? `/company/applications/${applicationId}/${customerName}`
+        : `/marketer/applications/${applicationId}/${customerName}`;
     },
   },
   INSTALLMENT_OVERDUE: {
@@ -74,10 +84,13 @@ export const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeConfig> = {
     icon: CheckCircle,
     tone: "info",
     label: "Approval Required",
-    getRoute: (meta) => {
+    getRoute: (meta, role) => {
       const requestId = meta?.requestId as string | undefined;
-      if (requestId) return `/marketer/payouts/${requestId}`;
-      return null;
+      if (!requestId) return null;
+
+      return isCompanySide(role)
+        ? `/company/payouts/${requestId}`
+        : `/marketer/payouts/${requestId}`;
     },
   },
   INSTALLMENT_REMINDER_3DAY: {
@@ -166,7 +179,10 @@ export const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeConfig> = {
     label: "Status Change Request",
     getRoute: (meta) => {
       const marketerId = meta?.marketerId as string | undefined;
-      if (marketerId) return `/company/marketers/${marketerId}`;
+      const marketerName = meta?.marketerName as string | undefined;
+
+      if (marketerId && marketerName)
+        return `/company/marketers/${marketerId}/${marketerName}`;
       return null;
     },
   },
@@ -176,7 +192,10 @@ export const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeConfig> = {
     label: "Delete Request",
     getRoute: (meta) => {
       const marketerId = meta?.marketerId as string | undefined;
-      if (marketerId) return `/company/marketers/${marketerId}`;
+      const marketerName = meta?.marketerName as string | undefined;
+
+      if (marketerId && marketerName)
+        return `/company/marketers/${marketerId}/${marketerName}`;
       return null;
     },
   },
@@ -186,7 +205,10 @@ export const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeConfig> = {
     label: "Status Approved",
     getRoute: (meta) => {
       const marketerId = meta?.marketerId as string | undefined;
-      if (marketerId) return `/company/marketers/${marketerId}`;
+      const marketerName = meta?.marketerName as string | undefined;
+
+      if (marketerId && marketerName)
+        return `/company/marketers/${marketerId}/${marketerName}`;
       return null;
     },
   },
@@ -264,5 +286,14 @@ export const DEFAULT_NOTIFICATION_TYPE: NotificationTypeConfig = {
 export const getNotificationTypeConfig = (
   type: string
 ): NotificationTypeConfig => {
-  return NOTIFICATION_TYPE_MAP[type] ?? DEFAULT_NOTIFICATION_TYPE;
+  const userRole = useAuth().user?.role as UserRole;
+  const config = NOTIFICATION_TYPE_MAP[type] ?? DEFAULT_NOTIFICATION_TYPE;
+
+  return {
+    ...config,
+    getRoute: config.getRoute
+      ? (meta: Record<string, unknown> | null) =>
+          config.getRoute!(meta, userRole)
+      : undefined,
+  };
 };

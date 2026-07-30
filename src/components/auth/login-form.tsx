@@ -64,52 +64,6 @@ export const LoginForm = ({ onRegisterClick, redirect }: LoginFormProps) => {
     [redirect, navigate]
   );
 
-  // const handleRoleBasedRedirect = useCallback(
-  //   (userRole: UserRole, forcePasswordChange: boolean = false) => {
-  //     const defaultRoutes: Record<UserRole, string> = {
-  //       COMPANY: "/company/overview",
-  //       ADMIN: "/company/overview",
-  //       MARKETER: "/marketer/overview",
-  //       CUSTOMER: "/customer/overview",
-  //     };
-
-  //     const decodedRedirect = redirect
-  //       ? decodeURIComponent(redirect)
-  //       : undefined;
-
-  //     const canAccessRedirect =
-  //       !!decodedRedirect &&
-  //       ((["COMPANY", "ADMIN"].includes(userRole) &&
-  //         decodedRedirect.startsWith("/company")) ||
-  //         (userRole === "MARKETER" &&
-  //           decodedRedirect.startsWith("/marketer")) ||
-  //         (userRole === "CUSTOMER" && decodedRedirect.startsWith("/customer")));
-
-  //     if (forcePasswordChange) {
-  //       navigate({
-  //         to: defaultRoutes[userRole],
-  //         search: {
-  //           forceChangePassword: true,
-  //         },
-  //       });
-
-  //       return;
-  //     }
-
-  //     if (canAccessRedirect) {
-  //       navigate({
-  //         to: decodedRedirect as any,
-  //       });
-
-  //       return;
-  //     }
-  //     navigate({
-  //       to: defaultRoutes[userRole],
-  //     });
-  //   },
-  //   [navigate, redirect]
-  // );
-
   return (
     <Formik
       initialValues={{ email: "", password: "" }}

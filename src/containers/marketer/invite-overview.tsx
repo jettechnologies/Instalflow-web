@@ -13,7 +13,7 @@ import {
 } from "@services/tanstack-mutations/invite";
 import { SuccessCard } from "@components/marketer/invite/SuccessCard";
 import type { InviteStep, RegisterPayload } from "@utils/types/invite";
-import type { InviteSearch, KycFormValues } from "@utils/schema/invite";
+import type { InviteSearchType, KycFormValues } from "@utils/schema/invite";
 import { useInviteProduct } from "@services/tanstack-queries/invite";
 import { InviteHeader, InviteLayout, InviteLogo } from "@layouts/index";
 import { InviteHero } from "@components/marketer/invite/InviteHero";
@@ -23,7 +23,7 @@ import { RegisterForm } from "@components/marketer/invite/RegisterForm";
 import { StepIndicator } from "@components/marketer/invite/StepIndicator";
 
 interface InviteOverviewProps {
-  search: InviteSearch;
+  search: InviteSearchType;
 }
 
 export const InviteOverview = ({ search }: InviteOverviewProps) => {
@@ -83,6 +83,7 @@ export const InviteOverview = ({ search }: InviteOverviewProps) => {
               <OfferCard
                 product={productQuery.data}
                 variantId={search.variant}
+                installmentPlanId={search.installmentPlan}
               />
             ) : (
               <Box
@@ -134,6 +135,7 @@ export const InviteOverview = ({ search }: InviteOverviewProps) => {
                   productQuery.data as NonNullable<typeof productQuery.data>
                 }
                 defaultVariantId={search.variant}
+                defaultInstallmentId={search.installmentPlan}
                 isSubmitting={submitMutation.isPending}
                 onSubmit={handleKyc}
                 onBack={() => setStep(1)}

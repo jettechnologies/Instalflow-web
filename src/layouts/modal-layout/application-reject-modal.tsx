@@ -31,7 +31,6 @@ export const ApplicationRejectModal = ({
       onClose();
       setReason("");
     },
-    onError: (e: Error) => openToast(e.message, "error"),
   });
 
   const canSubmit = useMemo(() => reason.trim().length >= 5, [reason]);
@@ -65,7 +64,8 @@ export const ApplicationRejectModal = ({
             onClick={() => mutateAsync()}
             isLoading={isPending}
             isDisabled={!canSubmit}
-            colorScheme="red">
+            colorScheme="red"
+            flex="1">
             Confirm reject
           </Button>
         </HStack>

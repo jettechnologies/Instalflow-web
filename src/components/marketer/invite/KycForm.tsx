@@ -13,6 +13,7 @@ import type { Product } from "@utils/types/response-type";
 interface KycFormProps {
   product: Product;
   defaultVariantId?: string;
+  defaultInstallmentId?: string;
   isSubmitting: boolean;
   onSubmit: (values: KycFormValues, file: File | null) => void;
   onBack: () => void;
@@ -34,6 +35,7 @@ function variantLabel(v: Product["variants"][number]): string {
 export function KycForm({
   product,
   defaultVariantId,
+  defaultInstallmentId,
   isSubmitting,
   onSubmit,
   onBack,
@@ -59,7 +61,10 @@ export function KycForm({
   const initialVariant =
     product.variants.find((v) => v.variantId === defaultVariantId) ??
     product.variants[0];
-  const initialPlan = product.installmentPlans[0];
+  const initialPlan =
+    product.installmentPlans.find(
+      (installment) => installment.planId === defaultInstallmentId
+    ) ?? product.installmentPlans[0];
 
   const variantOptions: Option[] = product.variants.map((v) => ({
     label: `${variantLabel(v)} · ${formatCurrency(v.price)}`,

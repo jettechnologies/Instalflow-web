@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  HStack,
+  Text,
+  VStack,
+  Center,
+  Spinner,
+} from "@chakra-ui/react";
 import { ExternalLink } from "lucide-react";
-import { useToastContext } from "@hooks/context";
 import { ModalLayout } from "@layouts/modal-layout/modal";
-import { getSignedDocumentUrl } from "@services/queries/kyc";
+import { useQuery } from "@tanstack/react-query";
+import { getKycSignedDocumentUrlQueryOptions } from "@services/tanstack-queries/kyc";
 
 interface ApplicationDocumentModalProps {
   isOpen: boolean;
@@ -17,28 +23,10 @@ export const ApplicationDocumentModal = ({
   onClose,
   applicationId,
 }: ApplicationDocumentModalProps) => {
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
-  const { openToast } = useToastContext();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => getSignedDocumentUrl(applicationId),
-    onSuccess: (data) => {
-      setSignedUrl(data.signedUrl);
-    },
-    onError: (e: Error) => openToast(e.message, "error"),
+  const { data: signedUrl, isLoading } = useQuery({
+    ...getKycSignedDocumentUrlQueryOptions(applicationId),
+    select: (data) => data.signedUrl || "",
   });
-
-  useEffect(() => {
-    if (isOpen && !signedUrl) {
-      mutate();
-    }
-  }, [isOpen, signedUrl, mutate]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setSignedUrl(null);
-    }
-  }, [isOpen]);
 
   return (
     <ModalLayout
@@ -49,30 +37,27 @@ export const ApplicationDocumentModal = ({
       subTitle="Secure document viewer"
       autoClose={false}>
       <VStack align="stretch" spacing={4}>
-        {signedUrl ? (
-          <Box
-            border="1px solid"
-            borderColor="borderStructural"
-            borderRadius="md"
-            overflow="hidden"
-            bg="bgLayer1">
-            <iframe
-              src={signedUrl}
-              width="100%"
-              height="500px"
-              title="Bank statement document"
-              style={{ border: "none" }}
-            />
-          </Box>
+        {isLoading ? (
+          <Center width="100%" height="300px">
+            <Spinner size="md" />
+          </Center>
         ) : (
-          <Flex justify="center" py={8}>
-            <Button
-              onClick={() => mutate()}
-              isLoading={isPending}
-              leftIcon={<ExternalLink size={16} />}>
-              Load document
-            </Button>
-          </Flex>
+          signedUrl && (
+            <Box
+              border="1px solid"
+              borderColor="borderStructural"
+              borderRadius="md"
+              overflow="hidden"
+              bg="bgLayer1">
+              <iframe
+                src={signedUrl}
+                width="100%"
+                height="600px"
+                title="Bank statement document"
+                style={{ border: "none" }}
+              />
+            </Box>
+          )
         )}
         <HStack spacing={3} pt={2}>
           <Button

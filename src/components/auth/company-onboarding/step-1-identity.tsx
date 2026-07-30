@@ -9,8 +9,11 @@ import {
   LockIcon,
 } from "@phosphor-icons/react";
 import { InputField } from "@components/forms/input-field";
+import type { UserData } from "@containers/onboarding-flow";
+import { useMemo } from "react";
 
 interface Step1Props {
+  userData: UserData | null;
   onSuccess: (data: {
     companyName: string;
     adminName: string;
@@ -19,17 +22,21 @@ interface Step1Props {
   }) => void;
 }
 
-export const Step1Identity = ({ onSuccess }: Step1Props) => {
+export const Step1Identity = ({ onSuccess, userData }: Step1Props) => {
+  const initialValues = useMemo(
+    () =>
+      userData
+        ? userData
+        : { companyName: "", adminName: "", email: "", password: "" },
+    [userData]
+  );
+
   return (
     <Formik
-      initialValues={{
-        companyName: "",
-        adminName: "",
-        email: "",
-        password: "",
-      }}
+      initialValues={initialValues}
       validationSchema={Step1Schema}
-      onSubmit={(vals) => onSuccess(vals)}>
+      onSubmit={(vals) => onSuccess(vals)}
+      enableReinitialize>
       {() => (
         <Form style={{ width: "100%" }}>
           <VStack spacing={5} align="stretch">

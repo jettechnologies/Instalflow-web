@@ -3,7 +3,7 @@ import { getProductBySlugQueryOptions } from "@services/tanstack-queries/catalog
 import { createFileRoute } from "@tanstack/react-router";
 import { InviteSearchSchema } from "@utils/schema/invite";
 
-export const Route = createFileRoute("/invite")({
+export const Route = createFileRoute("/(auth)/invite")({
   validateSearch: (search) =>
     InviteSearchSchema.validateSync(search, {
       abortEarly: false,

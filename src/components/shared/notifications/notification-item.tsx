@@ -41,6 +41,7 @@ export function NotificationItem({
       onMarkRead(notification.notificationId);
     }
     const route = config?.getRoute?.(notification.metadata!);
+
     if (route) {
       setTimeout(() => {
         onNavigate(route);

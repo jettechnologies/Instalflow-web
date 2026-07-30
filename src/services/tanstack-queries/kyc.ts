@@ -1,6 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@services/query-keys";
-import { getAllKycApplications, getKycApplicationById } from "../queries/kyc";
+import {
+  getAllKycApplications,
+  getKycApplicationById,
+  getSignedDocumentUrl,
+} from "../queries/kyc";
 import type { KycApplicationFilters } from "../queries/kyc";
 
 export const getAllKycApplicationsQueryOptions = (
@@ -23,6 +27,20 @@ export const getKycApplicationByIdQueryOptions = (applicationId: string) =>
     },
     enabled: Boolean(applicationId),
   });
+
+export const getKycSignedDocumentUrlQueryOptions = (applicationId: string) => {
+  return queryOptions({
+    queryKey: QUERY_KEYS.kyc.document(applicationId),
+    queryFn: async () => {
+      const response = await getSignedDocumentUrl(applicationId);
+      return response;
+    },
+    enabled: Boolean(applicationId),
+    retry(failureCount) {
+      return failureCount < 3;
+    },
+  });
+};
 
 // export const getMarketerApplicationsQueryOptions = (
 //   marketerId: string,

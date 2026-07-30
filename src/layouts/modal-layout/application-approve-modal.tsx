@@ -30,7 +30,6 @@ export const ApplicationApproveModal = ({
       );
       onClose();
     },
-    onError: (e: Error) => openToast(e.message, "error"),
   });
 
   return (
@@ -54,7 +53,8 @@ export const ApplicationApproveModal = ({
           <Button
             onClick={() => mutateAsync()}
             isLoading={isPending}
-            leftIcon={<Check size={16} />}>
+            leftIcon={<Check size={16} />}
+            flex="1">
             Confirm approval
           </Button>
         </HStack>

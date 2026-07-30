@@ -1,5 +1,6 @@
 import { createCookieOptions } from "@utils/misc";
 import { getCookie, setCookie, deleteCookie } from "cookies-next/client";
+import { localStorageHelper } from "@utils/helpers";
 
 export interface StandardResponse<T> {
   data: T;
@@ -33,6 +34,13 @@ const COOKIE_OPTIONS = createCookieOptions({ maxAge: 60 * 60 * 24 });
 
 export const LIMIT = "10";
 
+const BASE_URL =
+  import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE_URL || "";
+
+const CSRF_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const CSRF_REFRESH_BUFFER_MS = 5 * 60 * 1000;
+const CSRF_STORAGE_KEY = "ifl_csrf_state";
+
 let _accessToken: string | null =
   (getCookie(ACCESS_TOKEN_KEY) as string) ?? null;
 
@@ -48,29 +56,111 @@ export const setAuthToken = (token: string | null) => {
 export const getAuthToken = (): string | null =>
   _accessToken ?? (getCookie(ACCESS_TOKEN_KEY) as string | null) ?? null;
 
-const BASE_URL =
-  import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_BASE_URL || "";
+interface CsrfTokenState {
+  token: string;
+  expiresAt: number;
+}
 
-const ensureCsrfToken = async (): Promise<string | null> => {
+interface CsrfTokenState {
+  token: string;
+  expiresAt: number; // epoch ms
+}
+
+// Hydrate from localStorage on module init so a reload doesn't force an
+// unnecessary refetch while the cookie is still valid.
+let csrfState: CsrfTokenState | null =
+  localStorageHelper.get<CsrfTokenState>(CSRF_STORAGE_KEY);
+
+let csrfFetchPromise: Promise<string | null> | null = null;
+
+const isCsrfTokenValid = (
+  state: CsrfTokenState | null
+): state is CsrfTokenState =>
+  state !== null && Date.now() < state.expiresAt - CSRF_REFRESH_BUFFER_MS;
+
+const persistCsrfState = (state: CsrfTokenState | null): void => {
+  csrfState = state;
+  if (state) {
+    localStorageHelper.set(CSRF_STORAGE_KEY, state);
+  } else {
+    localStorageHelper.remove(CSRF_STORAGE_KEY);
+  }
+};
+
+const fetchCsrfToken = async (): Promise<string | null> => {
   try {
     const response = await fetch(`${BASE_URL}/csrf-token`, {
       method: "GET",
       credentials: "include",
     });
-    if (!response.ok) return null;
-    const data = await response.json();
-    const token = data.csrfToken;
 
-    if (token) {
-      return token;
+    if (!response.ok) {
+      persistCsrfState(null);
+      return null;
     }
 
-    return null;
+    const body = await response.json();
+
+    const token: string | undefined = body?.data?.csrfToken;
+    const expiresIn: number | undefined = body?.data?.expiresIn;
+
+    if (!token) {
+      persistCsrfState(null);
+      return null;
+    }
+
+    persistCsrfState({
+      token,
+      expiresAt: Date.now() + (expiresIn ?? CSRF_FALLBACK_MAX_AGE_MS),
+    });
+
+    return token;
   } catch (err) {
     console.warn("[apiService] CSRF fetch failed", err);
+    persistCsrfState(null);
     return null;
   }
 };
+
+const ensureCsrfToken = async (): Promise<string | null> => {
+  if (isCsrfTokenValid(csrfState)) {
+    return csrfState.token;
+  }
+
+  if (!csrfFetchPromise) {
+    csrfFetchPromise = fetchCsrfToken().finally(() => {
+      csrfFetchPromise = null;
+    });
+  }
+
+  return csrfFetchPromise;
+};
+
+export const invalidateCsrfToken = (): void => {
+  persistCsrfState(null);
+};
+
+// const ensureCsrfToken = async (): Promise<string | null> => {
+//   try {
+//     const response = await fetch(`${BASE_URL}/csrf-token`, {
+//       method: "GET",
+//       credentials: "include",
+//     });
+//     if (!response.ok) return null;
+//     const data = await response.json();
+//     const token = data.csrfToken;
+
+//     if (token) {
+//       console.log(token);
+//       return token;
+//     }
+
+//     return null;
+//   } catch (err) {
+//     console.warn("[apiService] CSRF fetch failed", err);
+//     return null;
+//   }
+// };
 
 const buildHeaders = (
   extra?: Record<string, string>
@@ -129,6 +219,11 @@ const extractErrorMessage = async (
 ): Promise<never> => {
   let message = fallback;
 
+  const csrfErrorMessages = new Set([
+    "Invalid CSRF token",
+    "CSRF token expired",
+  ]);
+
   try {
     const data = await response.clone().json();
 
@@ -140,6 +235,10 @@ const extractErrorMessage = async (
       throw new Error(
         message || "Your session has expired. Please login again."
       );
+    }
+
+    if (response.status === 403 && csrfErrorMessages.has(message)) {
+      invalidateCsrfToken();
     }
   } catch (err) {
     if (response.status === 401) {

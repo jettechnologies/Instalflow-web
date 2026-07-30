@@ -305,7 +305,11 @@ export interface SystemProductDef {
   variants: ItemVariantSchema[];
 }
 
-export type KycStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type KycStatus =
+  | "PENDING"
+  | "APPROVAL_PROCESSING"
+  | "APPROVED"
+  | "REJECTED";
 export type KycOnboardingStatus =
   | "PENDING_KYC"
   | "KYC_SUBMITTED"

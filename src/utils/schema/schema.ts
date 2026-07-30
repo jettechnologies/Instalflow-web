@@ -71,7 +71,9 @@ export const ApplicationsSearch = Yup.object({
   limit: Yup.string().optional(),
   sortOrder: Yup.string().oneOf(["desc", "asc"]).optional(),
   search: Yup.string().optional(),
-  status: Yup.string().oneOf(["PENDING", "APPROVED", "REJECTED"]).optional(),
+  status: Yup.string()
+    .oneOf(["PENDING", "APPROVAL_PROCESSING", "APPROVED", "REJECTED"])
+    .optional(),
 });
 
 export type ApplicationsSearchType = Yup.InferType<typeof ApplicationsSearch>;

@@ -25,12 +25,14 @@ interface CompanyApplicationsTableProps {
 
 const STATUS_LABEL: Record<KycStatus, string> = {
   PENDING: "Pending",
+  APPROVAL_PROCESSING: "Approval Processing",
   APPROVED: "Approved",
   REJECTED: "Rejected",
 };
 
 const tone: Record<KycStatus, { bg: string; fg: string }> = {
   PENDING: { bg: "rgba(245,158,11,0.14)", fg: "#F59E0B" },
+  APPROVAL_PROCESSING: { bg: "rgba(245,158,11,0.14)", fg: "#F59E0B" },
   APPROVED: { bg: "rgba(16,185,129,0.16)", fg: "#10B981" },
   REJECTED: { bg: "rgba(239,68,68,0.14)", fg: "#EF4444" },
 };
@@ -173,7 +175,7 @@ export const CompanyApplicationsTable = ({
         label: "Sign admin approval",
         onClick: (row: Row<KycApplication>) => {
           const app = row.original;
-          if (app.status === "PENDING" && !app.adminApproved) {
+          if (app.status === "APPROVAL_PROCESSING" && !app.adminApproved) {
             setApproveModal({
               applicationId: app.kycApplicationId,
               applicationName: app.user?.name || app.onboardingSession.name,
@@ -185,7 +187,10 @@ export const CompanyApplicationsTable = ({
         label: "Reject",
         onClick: (row: Row<KycApplication>) => {
           const app = row.original;
-          if (app.status === "PENDING") {
+          if (
+            app.status === "PENDING" ||
+            app.status === "APPROVAL_PROCESSING"
+          ) {
             setRejectModal({
               applicationId: app.kycApplicationId,
               applicationName: app.user?.name || app.onboardingSession.name,

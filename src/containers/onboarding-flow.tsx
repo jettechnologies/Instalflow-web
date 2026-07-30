@@ -85,6 +85,7 @@ export function CompanyOnboardingFlow({ view: rawView }: OnboardingFlowProps) {
           {view === "onboarding-step1" && (
             <>
               <Step1Identity
+                userData={sessionUserData ?? userData}
                 onSuccess={(data) => {
                   setUserData(data);
                   setUserDataSession(data);

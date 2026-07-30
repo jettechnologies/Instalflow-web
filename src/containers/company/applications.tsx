@@ -25,6 +25,7 @@ import { usePrefetchQueryData } from "@hooks/prefetch-query-data";
 
 const STATUS_LABEL: Record<KycStatus, string> = {
   PENDING: "Pending",
+  APPROVAL_PROCESSING: "Approval Processing",
   APPROVED: "Approved",
   REJECTED: "Rejected",
 };

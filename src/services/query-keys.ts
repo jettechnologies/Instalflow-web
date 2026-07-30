@@ -109,6 +109,7 @@ export const QUERY_KEYS = {
     base: () => ["kyc"],
     all: (params: any) => [...QUERY_KEYS.kyc.base(), "all", params],
     detail: (id: string) => [...QUERY_KEYS.kyc.base(), "detail", id],
+    document: (id: string) => [...QUERY_KEYS.kyc.base(), "document", id],
   },
   notifications: {
     base: () => ["notifications"],

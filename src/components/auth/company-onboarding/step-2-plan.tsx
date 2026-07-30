@@ -24,6 +24,7 @@ import type { UserData } from "@containers/onboarding-flow";
 import { useToastContext } from "@hooks/context";
 import { useNavigate } from "@tanstack/react-router";
 import { SessionStorageHelper } from "@utils/helpers";
+import { readSession } from "@store/session-store/onboarding-session";
 
 const CYCLE_TABS: { label: string; value: BillingCycle }[] = [
   { label: "Weekly", value: "WEEKLY" },
@@ -61,6 +62,8 @@ export const Step2Plans = ({ userData, onSuccess, onBack }: Step2Props) => {
   const { mutateAsync: startOnboarding, isPending: startOnboardingPending } =
     useStartOnboarding();
 
+  const sessionUserData = readSession();
+
   const handleCheckout = async () => {
     if (!userData && userData === null) {
       openToast(
@@ -71,7 +74,7 @@ export const Step2Plans = ({ userData, onSuccess, onBack }: Step2Props) => {
         () =>
           navigate({
             to: ".",
-            search: (prev) => ({
+            search: (prev: any) => ({
               ...prev,
               view: "onboarding-step1",
             }),
@@ -82,11 +85,17 @@ export const Step2Plans = ({ userData, onSuccess, onBack }: Step2Props) => {
       return;
     }
     try {
-      const onboarding = await startOnboarding({
-        ...userData,
-        planId: selectedPlanId!,
-      });
-      const intentId = onboarding.data.onboardingIntent.intentId;
+      let intentId: string;
+
+      if (!sessionUserData) {
+        const onboarding = await startOnboarding({
+          ...userData,
+          planId: selectedPlanId!,
+        });
+        intentId = onboarding.data.onboardingIntent.intentId;
+      } else {
+        intentId = sessionUserData?.intentId;
+      }
 
       if (!intentId) {
         throw new Error("Onboarding Not successfully");

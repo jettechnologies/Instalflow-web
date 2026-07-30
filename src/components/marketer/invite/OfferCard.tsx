@@ -1,12 +1,17 @@
 import { useMemo } from "react";
 import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { monthlyPayment, formatCurrency } from "@utils/misc";
-import type { InstallmentPlan, Product, Variant } from "@utils/types/response-type";
+import type {
+  InstallmentPlan,
+  Product,
+  Variant,
+} from "@utils/types/response-type";
 import { Stat } from "./Stat";
 
 interface OfferCardProps {
   product: Product;
   variantId?: string;
+  installmentPlanId?: string;
 }
 
 function variantLabel(v: Variant): string {
@@ -16,15 +21,30 @@ function variantLabel(v: Variant): string {
   return parts.length ? parts.join(" · ") : v.sku;
 }
 
-export function OfferCard({ product, variantId }: OfferCardProps) {
+export function OfferCard({
+  product,
+  variantId,
+  installmentPlanId,
+}: OfferCardProps) {
+  const activeInstallment: InstallmentPlan = useMemo(() => {
+    if (!installmentPlanId) {
+      return product.installmentPlans[0];
+    }
+
+    return (
+      product.installmentPlans.find(
+        (installment) => installment.planId === installmentPlanId
+      ) ?? product.installmentPlans[0]
+    );
+  }, [product.installmentPlans, installmentPlanId]);
+
   const variant =
     product.variants.find((v) => v.variantId === variantId) ??
     product.variants[0];
-  const plan: InstallmentPlan = product.installmentPlans[0];
+  const plan: InstallmentPlan = activeInstallment;
   const price = variant?.price ?? product.price;
   const monthly = useMemo(
-    () =>
-      monthlyPayment(price, plan.durationMonths, plan.interestPercentage),
+    () => monthlyPayment(price, plan.durationMonths, plan.interestPercentage),
     [price, plan]
   );
 
@@ -52,10 +72,7 @@ export function OfferCard({ product, variantId }: OfferCardProps) {
       <SimpleGrid columns={2} gap={3} mt={4}>
         <Stat label="Price" value={formatCurrency(price)} />
         <Stat label="Monthly" value={formatCurrency(monthly)} accent />
-        <Stat
-          label="Tenor"
-          value={`${plan.durationMonths} months`}
-        />
+        <Stat label="Tenor" value={`${plan.durationMonths} months`} />
         <Stat label="Interest" value={`${plan.interestPercentage}%`} />
       </SimpleGrid>
     </Box>
