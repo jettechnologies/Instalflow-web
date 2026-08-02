@@ -15,18 +15,6 @@ export const getProductsCatalogOptions = (page: number = 1) =>
     },
   });
 
-export const getCustomerInstallmentsOptions = (page: number = 1) =>
-  queryOptions({
-    queryKey: QUERY_KEYS.installments.customer(page),
-    queryFn: async () => {
-      const response = await apiService.get<any[]>("/installments/customer", {
-        page: String(page),
-        limit: "20",
-      });
-      return response.data;
-    },
-  });
-
 export const getPendingPayoutsOptions = () =>
   queryOptions({
     queryKey: QUERY_KEYS.commissions.pending(),

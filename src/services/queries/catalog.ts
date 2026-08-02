@@ -1,5 +1,6 @@
 import {
   apiService,
+  LIMIT,
   type PaginatedData,
   type UrlParams,
 } from "@services/api-service";
@@ -19,7 +20,7 @@ export const getMarketerCatalogQueryOptions = (targetPage: number) =>
     queryFn: async () => {
       const response = await apiService.get<SystemProductDef[]>("/products", {
         page: String(targetPage),
-        limit: "12",
+        limit: LIMIT,
       });
       return response.data;
     },

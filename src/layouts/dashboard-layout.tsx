@@ -75,7 +75,7 @@ const NAV: Record<UserRole, NavItem[]> = {
     { to: "/marketer/payouts", label: "Payouts", icon: Wallet },
   ],
   CUSTOMER: [
-    { to: "/customer/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/customer/overview", label: "Overview", icon: LayoutDashboard },
     { to: "/customer/installments", label: "Installments", icon: Receipt },
   ],
 };

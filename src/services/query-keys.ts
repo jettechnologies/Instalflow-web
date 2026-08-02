@@ -1,3 +1,4 @@
+import type { OverviewSearchType } from "@utils/schema";
 import type { UrlParams } from "./api-service";
 import type { ApprovalParams } from "./queries/staff-management";
 
@@ -71,10 +72,15 @@ export const QUERY_KEYS = {
   },
   installments: {
     base: () => ["installments"],
-    customer: (page?: number) => [
+    customer: (params?: OverviewSearchType) => [
       ...QUERY_KEYS.installments.base(),
       "customer",
-      page,
+      params,
+    ],
+    detail: (installmentId: string) => [
+      ...QUERY_KEYS.installments.base(),
+      "detail",
+      installmentId,
     ],
     contract: (id: string) => [
       ...QUERY_KEYS.installments.base(),

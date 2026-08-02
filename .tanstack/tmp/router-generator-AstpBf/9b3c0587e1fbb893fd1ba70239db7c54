@@ -20,9 +20,9 @@ import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authInviteRouteImport } from './routes/(auth)/invite'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authCompanyOnboardingRouteImport } from './routes/(auth)/company-onboarding'
+import { Route as AuthenticatedLayoutCustomerIndexRouteImport } from './routes/_authenticated/_layout/customer/index'
 import { Route as AuthenticatedLayoutMarketerOverviewRouteImport } from './routes/_authenticated/_layout/marketer/overview'
 import { Route as AuthenticatedLayoutMarketerLayoutRouteImport } from './routes/_authenticated/_layout/marketer/_layout'
-import { Route as AuthenticatedLayoutCustomerOverviewRouteImport } from './routes/_authenticated/_layout/customer/overview'
 import { Route as AuthenticatedLayoutCustomerLayoutRouteImport } from './routes/_authenticated/_layout/customer/_layout'
 import { Route as AuthenticatedLayoutCompanyLayoutRouteImport } from './routes/_authenticated/_layout/company/_layout'
 import { Route as AuthenticatedLayoutMarketerProductsIndexRouteImport } from './routes/_authenticated/_layout/marketer/products/index'
@@ -116,6 +116,12 @@ const AuthenticatedLayoutCompanyRoute =
     path: '/company',
     getParentRoute: () => AuthenticatedLayoutRoute,
   } as any)
+const AuthenticatedLayoutCustomerIndexRoute =
+  AuthenticatedLayoutCustomerIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedLayoutCustomerRoute,
+  } as any)
 const AuthenticatedLayoutMarketerOverviewRoute =
   AuthenticatedLayoutMarketerOverviewRouteImport.update({
     id: '/overview',
@@ -126,12 +132,6 @@ const AuthenticatedLayoutMarketerLayoutRoute =
   AuthenticatedLayoutMarketerLayoutRouteImport.update({
     id: '/_layout',
     getParentRoute: () => AuthenticatedLayoutMarketerRoute,
-  } as any)
-const AuthenticatedLayoutCustomerOverviewRoute =
-  AuthenticatedLayoutCustomerOverviewRouteImport.update({
-    id: '/overview',
-    path: '/overview',
-    getParentRoute: () => AuthenticatedLayoutCustomerRoute,
   } as any)
 const AuthenticatedLayoutCustomerLayoutRoute =
   AuthenticatedLayoutCustomerLayoutRouteImport.update({
@@ -280,9 +280,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof authResetPasswordRoute
   '/company': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
   '/customer': typeof AuthenticatedLayoutCustomerLayoutRoute
-  '/customer/overview': typeof AuthenticatedLayoutCustomerOverviewRoute
   '/marketer': typeof AuthenticatedLayoutMarketerLayoutRoute
   '/marketer/overview': typeof AuthenticatedLayoutMarketerOverviewRoute
+  '/customer/': typeof AuthenticatedLayoutCustomerIndexRoute
   '/company/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   '/company/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/company/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
@@ -312,8 +312,7 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/company': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
-  '/customer': typeof AuthenticatedLayoutCustomerLayoutRoute
-  '/customer/overview': typeof AuthenticatedLayoutCustomerOverviewRoute
+  '/customer': typeof AuthenticatedLayoutCustomerIndexRoute
   '/marketer': typeof AuthenticatedLayoutMarketerLayoutRoute
   '/marketer/overview': typeof AuthenticatedLayoutMarketerOverviewRoute
   '/company/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
@@ -351,10 +350,10 @@ export interface FileRoutesById {
   '/_authenticated/_layout/company/_layout': typeof AuthenticatedLayoutCompanyLayoutRouteWithChildren
   '/_authenticated/_layout/customer': typeof AuthenticatedLayoutCustomerRouteWithChildren
   '/_authenticated/_layout/customer/_layout': typeof AuthenticatedLayoutCustomerLayoutRoute
-  '/_authenticated/_layout/customer/overview': typeof AuthenticatedLayoutCustomerOverviewRoute
   '/_authenticated/_layout/marketer': typeof AuthenticatedLayoutMarketerRouteWithChildren
   '/_authenticated/_layout/marketer/_layout': typeof AuthenticatedLayoutMarketerLayoutRoute
   '/_authenticated/_layout/marketer/overview': typeof AuthenticatedLayoutMarketerOverviewRoute
+  '/_authenticated/_layout/customer/': typeof AuthenticatedLayoutCustomerIndexRoute
   '/_authenticated/_layout/company/_layout/analytics': typeof AuthenticatedLayoutCompanyLayoutAnalyticsRoute
   '/_authenticated/_layout/company/_layout/overview': typeof AuthenticatedLayoutCompanyLayoutOverviewRoute
   '/_authenticated/_layout/company/_layout/payouts': typeof AuthenticatedLayoutCompanyLayoutPayoutsRoute
@@ -387,9 +386,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/company'
     | '/customer'
-    | '/customer/overview'
     | '/marketer'
     | '/marketer/overview'
+    | '/customer/'
     | '/company/analytics'
     | '/company/overview'
     | '/company/payouts'
@@ -420,7 +419,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/company'
     | '/customer'
-    | '/customer/overview'
     | '/marketer'
     | '/marketer/overview'
     | '/company/analytics'
@@ -457,10 +455,10 @@ export interface FileRouteTypes {
     | '/_authenticated/_layout/company/_layout'
     | '/_authenticated/_layout/customer'
     | '/_authenticated/_layout/customer/_layout'
-    | '/_authenticated/_layout/customer/overview'
     | '/_authenticated/_layout/marketer'
     | '/_authenticated/_layout/marketer/_layout'
     | '/_authenticated/_layout/marketer/overview'
+    | '/_authenticated/_layout/customer/'
     | '/_authenticated/_layout/company/_layout/analytics'
     | '/_authenticated/_layout/company/_layout/overview'
     | '/_authenticated/_layout/company/_layout/payouts'
@@ -579,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLayoutCompanyRouteImport
       parentRoute: typeof AuthenticatedLayoutRoute
     }
+    '/_authenticated/_layout/customer/': {
+      id: '/_authenticated/_layout/customer/'
+      path: '/'
+      fullPath: '/customer/'
+      preLoaderRoute: typeof AuthenticatedLayoutCustomerIndexRouteImport
+      parentRoute: typeof AuthenticatedLayoutCustomerRoute
+    }
     '/_authenticated/_layout/marketer/overview': {
       id: '/_authenticated/_layout/marketer/overview'
       path: '/overview'
@@ -592,13 +597,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/marketer'
       preLoaderRoute: typeof AuthenticatedLayoutMarketerLayoutRouteImport
       parentRoute: typeof AuthenticatedLayoutMarketerRoute
-    }
-    '/_authenticated/_layout/customer/overview': {
-      id: '/_authenticated/_layout/customer/overview'
-      path: '/overview'
-      fullPath: '/customer/overview'
-      preLoaderRoute: typeof AuthenticatedLayoutCustomerOverviewRouteImport
-      parentRoute: typeof AuthenticatedLayoutCustomerRoute
     }
     '/_authenticated/_layout/customer/_layout': {
       id: '/_authenticated/_layout/customer/_layout'
@@ -818,7 +816,7 @@ const AuthenticatedLayoutCompanyRouteWithChildren =
 
 interface AuthenticatedLayoutCustomerRouteChildren {
   AuthenticatedLayoutCustomerLayoutRoute: typeof AuthenticatedLayoutCustomerLayoutRoute
-  AuthenticatedLayoutCustomerOverviewRoute: typeof AuthenticatedLayoutCustomerOverviewRoute
+  AuthenticatedLayoutCustomerIndexRoute: typeof AuthenticatedLayoutCustomerIndexRoute
   AuthenticatedLayoutCustomerInstallmentsIndexRoute: typeof AuthenticatedLayoutCustomerInstallmentsIndexRoute
   AuthenticatedLayoutCustomerInstallmentsInstallmentIdIndexRoute: typeof AuthenticatedLayoutCustomerInstallmentsInstallmentIdIndexRoute
 }
@@ -827,8 +825,8 @@ const AuthenticatedLayoutCustomerRouteChildren: AuthenticatedLayoutCustomerRoute
   {
     AuthenticatedLayoutCustomerLayoutRoute:
       AuthenticatedLayoutCustomerLayoutRoute,
-    AuthenticatedLayoutCustomerOverviewRoute:
-      AuthenticatedLayoutCustomerOverviewRoute,
+    AuthenticatedLayoutCustomerIndexRoute:
+      AuthenticatedLayoutCustomerIndexRoute,
     AuthenticatedLayoutCustomerInstallmentsIndexRoute:
       AuthenticatedLayoutCustomerInstallmentsIndexRoute,
     AuthenticatedLayoutCustomerInstallmentsInstallmentIdIndexRoute:

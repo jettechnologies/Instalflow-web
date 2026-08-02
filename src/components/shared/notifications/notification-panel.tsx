@@ -7,6 +7,7 @@ import {
   Spinner,
   Text,
   VStack,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Inbox } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -187,21 +188,32 @@ export function NotificationPanel({ onClose }: NotificationPanelProps) {
         onScroll={handleScroll}
         height="full">
         {isLoading ? (
-          <VStack py={8} spacing={3}>
+          <VStack py={8} px={4} spacing={3} w="full">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Box key={i} px={5} py={3}>
-                <Box
-                  h="12px"
-                  w="60%"
-                  bg="rgba(255,255,255,0.04)"
+              <Box
+                key={i}
+                px={5}
+                py={4}
+                w="full"
+                border="1px solid"
+                borderColor="borderStructural"
+                borderRadius="md"
+                bg="bgLayer2">
+                <Skeleton
+                  height="12px"
+                  width="60%"
+                  mb={3}
                   borderRadius="4px"
-                  mb={2}
+                  startColor="rgba(255,255,255,0.06)"
+                  endColor="rgba(255,255,255,0.12)"
                 />
-                <Box
-                  h="10px"
-                  w="90%"
-                  bg="rgba(255,255,255,0.03)"
+
+                <Skeleton
+                  height="10px"
+                  width="90%"
                   borderRadius="4px"
+                  startColor="rgba(255,255,255,0.04)"
+                  endColor="rgba(255,255,255,0.08)"
                 />
               </Box>
             ))}

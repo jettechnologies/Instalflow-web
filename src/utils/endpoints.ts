@@ -74,8 +74,19 @@ const catalog = {
   },
 };
 
+const installments = {
+  customer: "/installments/customer",
+  view: (installmentId: string) => `/installments/view/${installmentId}`,
+  pay: (installmentId: string) => `/installments/${installmentId}/pay`,
+  contract: (contractId: string) => `/installments/${contractId}`,
+  financedProducts: (contractId: string) =>
+    `/installments/${contractId}/products`,
+  progress: (contractId: string) => `/installments/${contractId}/progress`,
+};
+
 export const ENDPOINTS = {
   staffManagement,
   kyc,
   catalog,
+  installments,
 };

@@ -657,7 +657,10 @@ export default function DataTable<T>({
                 {pageNumbers.map((page) => (
                   <Button
                     key={page}
-                    onClick={() => pagination.onPageChange(page)}
+                    onClick={() => {
+                      pagination.onPageChange(page);
+                      pagination.onMouseEnter?.(page);
+                    }}
                     px={3}
                     minWidth="32px"
                     h="32px"
@@ -695,7 +698,10 @@ export default function DataTable<T>({
 
                 {pageCount > 1 && (
                   <Button
-                    onClick={() => pagination.onPageChange(pageCount)}
+                    onClick={() => {
+                      pagination.onPageChange(pageCount);
+                      pagination.onMouseEnter?.(pageCount);
+                    }}
                     px={3}
                     minWidth="32px"
                     h="32px"
@@ -733,9 +739,10 @@ export default function DataTable<T>({
                 variant="ghost"
                 color="textSecondary"
                 _hover={{ color: "textPrimary", bg: "whiteAlpha.100" }}
-                onClick={() =>
-                  pagination.onPageChange(pagination.currentPage + 1)
-                }
+                onClick={() => {
+                  pagination.onPageChange(pagination.currentPage + 1);
+                  pagination.onMouseEnter?.(pagination.currentPage + 1);
+                }}
                 isDisabled={pagination.currentPage === pageCount}
                 p={2}
                 minWidth="32px"

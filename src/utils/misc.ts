@@ -63,6 +63,9 @@ export const slugify = (value: string): string =>
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
+export const ngn = (value: number | string) =>
+  formatCurrency(Number(value), "NGN");
+
 export const USER_COOKIE_KEY = "ifl_user";
 export const TOKEN_COOKIE_KEY = "ifl_access_token";
 export const APPROVAL_STATUS = ["PENDING", "APPROVED", "REJECTED"] as const;
